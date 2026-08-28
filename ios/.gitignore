@@ -1,0 +1,36 @@
+# macOS
+.DS_Store
+
+# Xcode user-specific data
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+
+# Build products and archives
+DerivedData/
+build/
+.build/
+*.dSYM
+*.dSYM.zip
+*.ipa
+*.xcarchive
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Test and automation output
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Python helper cache
+__pycache__/
+*.py[cod]
