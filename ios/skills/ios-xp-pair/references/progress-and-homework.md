@@ -40,12 +40,25 @@ Green 범위: 테스트를 통과할 최소 구현
 
 ## 코드 내비게이션 주석
 
-사용자가 다음 행동을 파일에서 찾을 수 있도록 필요한 위치에만 다음 형식을 사용한다.
+사용자가 다음 행동을 파일에서 찾을 수 있도록 필요한 위치에만 다음 형식을 사용한다. 아래 코드는 형식 예시이며, 실제 내비게이션에는 현재 프로젝트에서 확인한 symbol을 사용한다.
+
+Red 단계:
 
 ```swift
 // LEARNING: 이 값의 source of truth를 View가 소유하는 이유를 확인한다.
-// TODO(TEST): Given/When/Then으로 실패 예제를 먼저 추가한다.
-// TODO(IMPLEMENT): 위 테스트를 통과할 최소 상태 전이만 구현한다.
+// TODO(TEST) GIVEN 1: 다음 줄은 Empty 상태로 시작하는 화면 모델을 만드는 코드다.
+// TYPE: let sut = CallListModel(state: .empty)
+// TODO(TEST) WHEN 1: 다음 줄은 모델의 새로고침 동작을 한 번 실행하는 코드다.
+// TYPE: sut.refresh()
+// TODO(TEST) THEN 1: 다음 줄은 모델 상태가 Loading으로 바뀌었는지 검증하는 코드다.
+// TYPE: #expect(sut.state == .loading)
+```
+
+Red 확인 뒤 Green 단계:
+
+```swift
+// TODO(IMPLEMENT) WHEN 1: 다음 줄은 새로고침을 받으면 상태를 Loading으로 변경하는 코드다.
+// TYPE: state = .loading
 // VERIFY: Preview의 Empty와 Error 상태가 서로 다르게 보이는지 확인한다.
 ```
 
@@ -54,9 +67,11 @@ Green 범위: 테스트를 통과할 최소 구현
 - 실제 파일과 symbol을 확인한 뒤 가장 가까운 구현 위치에 둔다.
 - test navigation은 대상 test file 또는 test suite에 둔다.
 - implementation navigation은 production symbol에 둔다.
+- `TODO(TEST)`와 `TODO(IMPLEMENT)`는 Given/When/Then과 단계 번호를 붙여 각 코드 라인의 역할을 설명한다.
+- 각 설명 아래에는 `// TYPE:`으로 사용자가 그대로 입력할 정확한 코드 한 줄을 제공한다. 현재 파일의 symbol과 API를 사용하고, 모든 `TYPE:` 라인을 입력한 뒤 컴파일하는 데 필요한 선언과 중괄호도 생략하지 않는다.
 - Xcode 설정 작업은 Source 주석으로 흉내 내지 않고 대화에서 정확한 Navigator 경로를 안내한다.
-- 정답 코드, 긴 이론, 여러 Day 뒤의 설계를 TODO에 넣지 않는다.
-- 완료된 TODO는 제거한다. 여전히 코드 의도를 설명하는 가치가 있을 때만 일반 주석으로 바꾼다.
+- 긴 이론이나 여러 Day 뒤의 설계를 TODO에 넣지 않는다.
+- 완료된 TODO와 짝을 이루는 `TYPE:` 주석은 함께 제거한다. 여전히 코드 의도를 설명하는 가치가 있을 때만 일반 주석으로 바꾼다.
 
 ## Day 완료 판정과 진도 갱신
 
@@ -65,7 +80,7 @@ Green 범위: 테스트를 통과할 최소 구현
 1. 집중 테스트를 실행한다.
 2. 관련된 더 넓은 테스트 묶음을 실행한다.
 3. Preview, Simulator, XCUITest, 실기기 중 Day가 요구하는 관찰 결과를 확인한다.
-4. 미완료 `TODO(TEST)`와 `TODO(IMPLEMENT)`가 Day 필수 범위에 남아 있지 않은지 확인한다.
+4. 미완료 `TODO(TEST)`, `TODO(IMPLEMENT)`, 짝 없는 `TYPE:` 주석이 Day 필수 범위에 남아 있지 않은지 확인한다.
 5. `courses/day-XX.md`의 `- [ ] Day XX 완료`를 `- [x]`로 바꾼다.
 6. `courses/day-00.md`의 해당 Day 체크도 `- [x]`로 바꾼다.
 7. `homework/day-XX.md`를 작성하거나 갱신한다.
