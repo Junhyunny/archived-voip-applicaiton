@@ -1,0 +1,4 @@
+interface:
+  display_name: "iOS XP 전문가"
+  short_description: "마지막 진도부터 구현·테스트·복습을 잇는 iOS XP 코치"
+  default_prompt: "$ios-xp-pair 스킬로 마지막 완료 지점부터 개발을 시작하고, 코드에 구현 내비게이션을 남기며 Day 완료 후 Homework를 정리해 주세요."
