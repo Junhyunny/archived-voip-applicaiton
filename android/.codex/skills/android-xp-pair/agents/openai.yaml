@@ -1,0 +1,6 @@
+interface:
+  display_name: "안드로이드 XP 페어"
+  short_description: "마지막 진도부터 TDD와 homework를 안내하는 Android 코치"
+  default_prompt: "$android-xp-pair를 사용해 개발 시작하자. 마지막 완료 지점부터 TDD로 진행하고 코드 내비게이션과 homework를 남겨 줘."
+policy:
+  allow_implicit_invocation: true
