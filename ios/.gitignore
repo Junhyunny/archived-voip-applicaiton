@@ -34,3 +34,19 @@ fastlane/test_output/
 # Python helper cache
 __pycache__/
 *.py[cod]
+
+# Dependency managers
+Pods/
+Carthage/Build/
+.swiftpm/
+**/xcshareddata/swiftpm/configuration
+
+# Xcode build artifacts
+*.hmap
+*.moved-aside
+*.app
+*.xcresult
+
+# Editors
+.vscode/
+.idea/
