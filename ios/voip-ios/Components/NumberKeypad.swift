@@ -17,30 +17,31 @@ struct NumberKeypad: View {
     }
 
     var body: some View {
-        LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
-            ForEach(1...9, id: \.self) { number in
-                Button("\(number)") {
-                    tabKeypad(number: "\(number)")
+        VStack {
+            LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
+                ForEach(1...9, id: \.self) { number in
+                    Button("\(number)") {
+                        tabKeypad(number: "\(number)")
+                    }
+                    .accessibilityIdentifier("keypad_\(number)")
                 }
-                .accessibilityIdentifier("keypad_\(number)")
+            }
+            LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
+                Button("") {
+                    print("Actions for empty")
+                }
+                .accessibilityIdentifier("keypad_empty")
+                Button("0") {
+                    tabKeypad(number: "0")
+                }
+                .accessibilityIdentifier("keypad_0")
+                Button("delete") {
+                    _ = roomCode.popLast()
+                }
+                .accessibilityIdentifier("keypad_delete")
             }
         }
-        LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
-            Button("") {
-                print("Actions for empty")
-            }
-            .accessibilityIdentifier("keypad_empty")
-            Button("0") {
-                tabKeypad(number: "0")
-            }
-            .accessibilityIdentifier("keypad_0")
-            Button("delete") {
-                if roomCode.isEmpty {
-                    return
-                }
-                roomCode.remove(at: roomCode.index(before: roomCode.endIndex))
-            }
-            .accessibilityIdentifier("keypad_delete")
-        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("numbers_keypad")
     }
 }
