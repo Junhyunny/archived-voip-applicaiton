@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "DE49FBD5-619B-49EE-B746-3DB5F6BCE355",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:voip-ios.xcodeproj",
+        "identifier" : "A6D23780305BBE5400A12732",
+        "name" : "voip-iosUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:voip-ios.xcodeproj",
+        "identifier" : "A6D23776305BBE5400A12732",
+        "name" : "voip-iosTests"
+      }
+    }
+  ],
+  "version" : 1
+}

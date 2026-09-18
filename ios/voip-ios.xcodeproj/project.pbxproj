@@ -24,14 +24,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A60009C1305D2679008B8B70 /* voip-ios.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = "voip-ios.xctestplan"; sourceTree = "<group>"; };
 		A6D2376A305BBE5300A12732 /* voip-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "voip-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6D23777305BBE5400A12732 /* voip-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "voip-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6D23781305BBE5400A12732 /* voip-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "voip-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A60009C6305D488C008B8B70 /* Exceptions for "voip-ios" folder in "voip-iosTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Configurations/AppConfiguration.swift,
+			);
+			target = A6D23776305BBE5400A12732 /* voip-iosTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A6D2376C305BBE5300A12732 /* voip-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A60009C6305D488C008B8B70 /* Exceptions for "voip-ios" folder in "voip-iosTests" target */,
+			);
 			path = "voip-ios";
 			sourceTree = "<group>";
 		};
@@ -75,6 +89,7 @@
 		A6D23761305BBE5300A12732 = {
 			isa = PBXGroup;
 			children = (
+				A60009C1305D2679008B8B70 /* voip-ios.xctestplan */,
 				A6D2376C305BBE5300A12732 /* voip-ios */,
 				A6D2377A305BBE5400A12732 /* voip-iosTests */,
 				A6D23784305BBE5400A12732 /* voip-iosUITests */,
