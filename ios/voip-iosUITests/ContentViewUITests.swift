@@ -133,4 +133,84 @@ final class ContentViewUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["4"].exists)
         XCTAssertFalse(app.staticTexts["5"].exists)
     }
+    
+    @MainActor
+    func test_when_tapping_more_than_4_digits_then_see_enable_call_button() {
+        let cases = [
+            ["1", "2", "3", "4", "5"],
+            ["5", "6", "7", "8", "9"],
+            ["9", "0", "1", "3", "4"],
+        ]
+        for tc in cases {
+            let app = XCUIApplication()
+            app.launch()
+            
+            let keypad = app.otherElements["numbers_keypad"]
+            keypad.buttons["keypad_1"].tap()
+            keypad.buttons["keypad_2"].tap()
+            keypad.buttons["keypad_3"].tap()
+            keypad.buttons["keypad_4"].tap()
+            keypad.buttons["keypad_5"].tap()
+            
+            XCTAssertTrue(app.buttons["call_button"].isEnabled)
+        }
+    }
+    
+    @MainActor
+    func test_when_tap_delete_button_then_remove_last_digit() {
+        let app = XCUIApplication()
+        app.launch()
+        
+        let keypad = app.otherElements["numbers_keypad"]
+        keypad.buttons["keypad_1"].tap()
+        keypad.buttons["keypad_2"].tap()
+        keypad.buttons["keypad_3"].tap()
+        keypad.buttons["keypad_4"].tap()
+        keypad.buttons["keypad_delete"].tap()
+        
+        XCTAssertFalse(app.buttons["call_button"].isEnabled)
+        XCTAssertTrue(app.staticTexts["1"].exists)
+        XCTAssertTrue(app.staticTexts["2"].exists)
+        XCTAssertTrue(app.staticTexts["3"].exists)
+        XCTAssertFalse(app.staticTexts["4"].exists)
+    }
+    
+    
+    @MainActor
+    func test_given_5_digits_when_tap_delete_button_then_remove_last_digit() {
+        let app = XCUIApplication()
+        app.launch()
+        
+        let keypad = app.otherElements["numbers_keypad"]
+        keypad.buttons["keypad_1"].tap()
+        keypad.buttons["keypad_2"].tap()
+        keypad.buttons["keypad_3"].tap()
+        keypad.buttons["keypad_4"].tap()
+        keypad.buttons["keypad_5"].tap()
+        keypad.buttons["keypad_delete"].tap()
+        
+        XCTAssertFalse(app.buttons["call_button"].isEnabled)
+        XCTAssertTrue(app.staticTexts["1"].exists)
+        XCTAssertTrue(app.staticTexts["2"].exists)
+        XCTAssertTrue(app.staticTexts["3"].exists)
+        XCTAssertFalse(app.staticTexts["4"].exists)
+        XCTAssertFalse(app.staticTexts["5"].exists)
+    }
+    
+    @MainActor
+    func test_when_tap_delete_button_more_than_entered_digits_then_remove_all_digit() {
+        let app = XCUIApplication()
+        app.launch()
+        
+        let keypad = app.otherElements["numbers_keypad"]
+        keypad.buttons["keypad_1"].tap()
+        keypad.buttons["keypad_2"].tap()
+        keypad.buttons["keypad_delete"].tap()
+        keypad.buttons["keypad_delete"].tap()
+        keypad.buttons["keypad_delete"].tap()
+        
+        XCTAssertFalse(app.buttons["call_button"].isEnabled)
+        XCTAssertFalse(app.staticTexts["1"].exists)
+        XCTAssertFalse(app.staticTexts["2"].exists)
+    }
 }

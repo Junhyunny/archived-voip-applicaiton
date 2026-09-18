@@ -9,12 +9,18 @@ import SwiftUI
 
 struct NumberKeypad: View {
     @Binding var roomCode: String
-    
+
+    private func tabKeypad(number: String) {
+        if roomCode.count < 4 {
+            roomCode.append(number)
+        }
+    }
+
     var body: some View {
         LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
             ForEach(1...9, id: \.self) { number in
                 Button("\(number)") {
-                    roomCode.append("\(number)")
+                    tabKeypad(number: "\(number)")
                 }
                 .accessibilityIdentifier("keypad_\(number)")
             }
@@ -25,11 +31,14 @@ struct NumberKeypad: View {
             }
             .accessibilityIdentifier("keypad_empty")
             Button("0") {
-                roomCode.append("0")
+                tabKeypad(number: "0")
             }
             .accessibilityIdentifier("keypad_0")
             Button("delete") {
-                print("Actions for delete")
+                if roomCode.isEmpty {
+                    return
+                }
+                roomCode.remove(at: roomCode.index(before: roomCode.endIndex))
             }
             .accessibilityIdentifier("keypad_delete")
         }
