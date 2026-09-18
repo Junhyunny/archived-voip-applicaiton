@@ -1,5 +1,5 @@
 //
-//  EnterRoomViewUITests.swift
+//  CallingViewUITests.swift
 //  voip-ios
 //
 //  Created by 강준현 on 9/18/26.

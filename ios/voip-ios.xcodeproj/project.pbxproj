@@ -29,22 +29,9 @@
 		A6D23781305BBE5400A12732 /* voip-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "voip-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A6000974305CF4AE008B8B70 /* Exceptions for "voip-ios" folder in "voip-iosUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Views/CallingView.swift,
-			);
-			target = A6D23780305BBE5400A12732 /* voip-iosUITests */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A6D2376C305BBE5300A12732 /* voip-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A6000974305CF4AE008B8B70 /* Exceptions for "voip-ios" folder in "voip-iosUITests" target */,
-			);
 			path = "voip-ios";
 			sourceTree = "<group>";
 		};
