@@ -12,7 +12,7 @@ struct voip_iosApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.appConfiguration, .fromLaunchEnvironment())
+                .environment(\.appConfig, .fromLaunchEnvironment())
         }
     }
 }

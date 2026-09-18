@@ -9,10 +9,18 @@ import SwiftUI
 
 struct CallingView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.appConfiguration) private var appConfiguration
-    @State private var vm: CallingViewModel = CallingViewModel()
+    @State private var vm: CallingViewModel
 
-    var roomCode: String
+    private let roomCode: String
+
+    init(roomCode: String, timeLimitSeconds: Int) {
+        self.roomCode = roomCode
+        _vm = State(
+            initialValue: CallingViewModel(
+                limit: timeLimitSeconds
+            )
+        )
+    }
 
     var body: some View {
         VStack {
@@ -29,7 +37,7 @@ struct CallingView: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("calling_view")
         .task {
-            await vm.startTimer(limit: appConfiguration.timeLimitSeconds)
+            await vm.startTimer()
         }
         .onChange(of: vm.time) { _, new in
             if new == 0 {
@@ -40,5 +48,5 @@ struct CallingView: View {
 }
 
 #Preview {
-    CallingView(roomCode: "0000")
+    CallingView(roomCode: "0000", timeLimitSeconds: 60)
 }

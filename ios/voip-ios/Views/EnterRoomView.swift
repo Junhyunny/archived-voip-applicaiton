@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EnterRoomView: View {
     @State private var roomCode: String = ""
+    @Environment(\.appConfig) private var appConfig
 
     private func character(at index: Int) -> String? {
         guard index < roomCode.count else {
@@ -34,12 +35,16 @@ struct EnterRoomView: View {
             Text("두 기기에 같은 코드를 입력하세요")
             RoomCodeSection
             NumberKeypad(roomCode: $roomCode)
-            NavigationLink(
-                destination: CallingView(roomCode: roomCode),
-            ) {
+            NavigationLink(value: roomCode) {
                 Text("통화 시작")
             }
             .disabled(roomCode.count != 4)
+            .navigationDestination(for: String.self) { code in
+                CallingView(
+                    roomCode: code,
+                    timeLimitSeconds: appConfig.timeLimitSeconds
+                )
+            }
             .accessibilityIdentifier("call_button")
         }
         .accessibilityElement(children: .contain)

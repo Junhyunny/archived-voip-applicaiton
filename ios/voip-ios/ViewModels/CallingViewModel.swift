@@ -21,14 +21,16 @@ struct RealTimerClock: TimerClock {
 class CallingViewModel {
 
     private(set) var time: Int
+    private let limit: Int
     private let timerClock: TimerClock
 
-    init(time: Int = 60, timerClock: TimerClock = RealTimerClock()) {
-        self.time = time
+    init(limit: Int, timerClock: TimerClock = RealTimerClock()) {
+        self.time = limit
+        self.limit = limit
         self.timerClock = timerClock
     }
 
-    func startTimer(limit: Int) async {
+    func startTimer() async {
         time = limit
         while time > 0 {
             do {

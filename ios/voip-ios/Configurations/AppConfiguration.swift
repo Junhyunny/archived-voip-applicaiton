@@ -31,7 +31,7 @@ private struct AppConfigurationKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var appConfiguration: AppConfiguration {
+    var appConfig: AppConfiguration {
         get { self[AppConfigurationKey.self] }
         set { self[AppConfigurationKey.self] = newValue }
     }

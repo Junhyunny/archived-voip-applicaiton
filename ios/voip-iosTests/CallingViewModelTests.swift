@@ -60,7 +60,7 @@ struct CallingViewModelTests {
 
     @Test
     func default_timer_seconds_is_60() throws {
-        let sut = CallingViewModel()
+        let sut = CallingViewModel(limit: 60)
 
         #expect(sut.time == 60)
     }
@@ -68,10 +68,13 @@ struct CallingViewModelTests {
     @Test
     func when_start_timer_then_timer_seconds_is_decreased_by_1() async throws {
         let testTimerClock = TestTimerClock()
-        let sut = CallingViewModel(timerClock: testTimerClock)
+        let sut = CallingViewModel(
+            limit: 60,
+            timerClock: testTimerClock
+        )
 
         Task {
-            await sut.startTimer(limit: 60)
+            await sut.startTimer()
         }
 
         await testTimerClock.waitForSleeper()
