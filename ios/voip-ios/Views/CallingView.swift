@@ -31,8 +31,7 @@ struct CallingView: View {
         .task {
             await vm.startTimer(limit: appConfiguration.timeLimitSeconds)
         }
-        .onChange(of: vm.time) { old, new in
-            print(old, new)
+        .onChange(of: vm.time) { _, new in
             if new == 0 {
                 dismiss()
             }

@@ -28,7 +28,7 @@ class CallingViewModel {
         self.timerClock = timerClock
     }
 
-    func startTimer(limit: Int = 60) async {
+    func startTimer(limit: Int) async {
         time = limit
         while time > 0 {
             do {

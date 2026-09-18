@@ -18,6 +18,7 @@ actor TestTimerClock: TimerClock {
 
     private var now: Duration = .zero
     private var sleepers: [Sleeper] = []
+    private var waiters: [CheckedContinuation<Void, Never>] = []
 
     func sleepOneSecond() async throws {
         let deadline = now + .seconds(1)
@@ -28,11 +29,20 @@ actor TestTimerClock: TimerClock {
                     continuation: continuation
                 )
             )
+            for waiter in waiters { waiter.resume() }
+            waiters.removeAll()
         }
     }
 
-    func advance(by duration: Duration) {
-        now += duration
+    func waitForSleeper() async {
+        guard sleepers.isEmpty else { return }
+        await withCheckedContinuation {
+            waiters.append($0)
+        }
+    }
+
+    func advanceOneSecond() {
+        now += .seconds(1)
         let ready = sleepers.filter {
             $0.deadline <= now
         }
@@ -61,22 +71,20 @@ struct CallingViewModelTests {
         let sut = CallingViewModel(timerClock: testTimerClock)
 
         Task {
-            await sut.startTimer()
+            await sut.startTimer(limit: 60)
         }
-        
-        await Task.yield()
-        await testTimerClock.advance(by: .seconds(1))
-        await Task.yield()
+
+        await testTimerClock.waitForSleeper()
+        await testTimerClock.advanceOneSecond()
+        await testTimerClock.waitForSleeper()
         #expect(sut.time == 59)
 
-        await Task.yield()
-        await testTimerClock.advance(by: .seconds(1))
-        await Task.yield()
+        await testTimerClock.advanceOneSecond()
+        await testTimerClock.waitForSleeper()
         #expect(sut.time == 58)
 
-        await Task.yield()
-        await testTimerClock.advance(by: .seconds(1))
-        await Task.yield()
+        await testTimerClock.advanceOneSecond()
+        await testTimerClock.waitForSleeper()
         #expect(sut.time == 57)
     }
 }
