@@ -5,7 +5,18 @@
 //  Created by 강준현 on 9/18/26.
 //
 
+import OSLog
 import SwiftUI
+
+private let logger = Logger(
+    subsystem: "com.example.voip-ios",
+    category: "Signaling"
+)
+
+struct JoinMessage: Codable {
+    let type = "join"
+    let roomCode: String
+}
 
 struct CallingView: View {
     @Environment(\.dismiss) private var dismiss
@@ -37,6 +48,28 @@ struct CallingView: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("calling_view")
         .task {
+            let url = URL(string: "ws://localhost:8080/signaling")!
+            let webSocketTask =
+                URLSession.shared.webSocketTask(with: url)
+            webSocketTask.resume()
+            do {
+                let message = JoinMessage(roomCode: roomCode)
+                let data = try JSONEncoder().encode(message)
+                let string = String(decoding: data, as: UTF8.self)
+                try await webSocketTask.send(.string(string))
+                logger.info("CLIENT SENT: \(string)")
+                let response = try await webSocketTask.receive()
+                switch response {
+                case .string(let text):
+                    print("received text:", text)
+                case .data(let data):
+                    print("received data:", data)
+                @unknown default:
+                    break
+                }
+            } catch {
+                logger.info("websocket error: \(error)")
+            }
             await vm.startTimer()
         }
         .onChange(of: vm.time) { _, new in

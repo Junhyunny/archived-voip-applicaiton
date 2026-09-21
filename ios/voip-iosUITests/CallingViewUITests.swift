@@ -5,13 +5,51 @@
 //  Created by 강준현 on 9/18/26.
 //
 
+import FlyingFox
 import XCTest
 
 final class CallingViewUITests: XCTestCase {
     private var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    var mockMessageStore: MockMessageStore!
+    var mockServer: HTTPServer!
+    override func setUp() async throws {
         continueAfterFailure = false
+        mockMessageStore = MockMessageStore()
+        mockServer = await setupWebSocket(
+            routes: [
+                (
+                    "GET /signaling",
+                    MockWSMessageHandler(store: mockMessageStore)
+                )
+            ]
+        )
+    }
+
+    override func tearDown() async throws {
+        await mockServer.stop(timeout: 2)
+    }
+
+    private func setupWebSocket(routes: [(HTTPRoute, WSMessageHandler)]) async
+        -> HTTPServer
+    {
+        let server = HTTPServer(port: 8080)
+        for route in routes {
+            await server.appendRoute(
+                route.0,
+                to: .webSocket(route.1)
+            )
+        }
+        _ = Task {
+            do {
+                try await server.run()
+                try await server.waitUntilListening()
+            } catch {
+                print("server error:", error)
+            }
+        }
+
+        return server
     }
 
     private func navigateToCallingView(timeLimit: Int = 60) {
@@ -69,5 +107,25 @@ final class CallingViewUITests: XCTestCase {
         let callingView = app.otherElements["calling_view"]
         XCTAssertTrue(enterRoomView.waitForExistence(timeout: 3))
         XCTAssertFalse(callingView.exists)
+    }
+
+    @MainActor
+    func test_when_render_then_send_join_request_to_signaling_sever()
+        async throws
+    {
+        navigateToCallingView()
+
+        let messages = await mockMessageStore.messages
+        XCTAssertEqual(messages.count, 1)
+
+        let data = Data(messages[0].utf8)
+        let json = try JSONSerialization.jsonObject(with: data)
+        guard let map = json as? [String: Any] else {
+            XCTFail("Expected JSON object")
+            return
+        }
+        XCTAssertEqual(map.count, 2)
+        XCTAssertEqual(map["roomCode"] as? String, "1234")
+        XCTAssertEqual(map["type"] as? String, "join")
     }
 }

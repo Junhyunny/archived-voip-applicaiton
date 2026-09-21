@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol TimerClock {
+nonisolated protocol TimerClock {
     func sleepOneSecond() async throws
 }
 

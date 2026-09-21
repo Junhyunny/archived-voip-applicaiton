@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A62306943060B45100467B7C /* FlyingFox in Frameworks */ = {isa = PBXBuildFile; productRef = A62306933060B45100467B7C /* FlyingFox */; };
+		A62306963060B45100467B7C /* FlyingSocks in Frameworks */ = {isa = PBXBuildFile; productRef = A62306953060B45100467B7C /* FlyingSocks */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A6D23778305BBE5400A12732 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,7 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A60009C1305D2679008B8B70 /* voip-ios.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = "voip-ios.xctestplan"; sourceTree = "<group>"; };
+		A60009C1305D2679008B8B70 /* voip-ios.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "voip-ios.xctestplan"; sourceTree = "<group>"; };
 		A6D2376A305BBE5300A12732 /* voip-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "voip-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6D23777305BBE5400A12732 /* voip-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "voip-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6D23781305BBE5400A12732 /* voip-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "voip-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,6 +85,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A62306943060B45100467B7C /* FlyingFox in Frameworks */,
+				A62306963060B45100467B7C /* FlyingSocks in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +180,8 @@
 			);
 			name = "voip-iosUITests";
 			packageProductDependencies = (
+				A62306933060B45100467B7C /* FlyingFox */,
+				A62306953060B45100467B7C /* FlyingSocks */,
 			);
 			productName = "voip-iosUITests";
 			productReference = A6D23781305BBE5400A12732 /* voip-iosUITests.xctest */;
@@ -210,6 +219,9 @@
 			);
 			mainGroup = A6D23761305BBE5300A12732;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A62306923060B45100467B7C /* XCRemoteSwiftPackageReference "FlyingFox" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A6D2376B305BBE5300A12732 /* Products */;
 			projectDirPath = "";
@@ -593,6 +605,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A62306923060B45100467B7C /* XCRemoteSwiftPackageReference "FlyingFox" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swhitty/FlyingFox.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.27.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A62306933060B45100467B7C /* FlyingFox */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A62306923060B45100467B7C /* XCRemoteSwiftPackageReference "FlyingFox" */;
+			productName = FlyingFox;
+		};
+		A62306953060B45100467B7C /* FlyingSocks */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A62306923060B45100467B7C /* XCRemoteSwiftPackageReference "FlyingFox" */;
+			productName = FlyingSocks;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A6D23762305BBE5300A12732 /* Project object */;
 }
