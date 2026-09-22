@@ -10,6 +10,6 @@ enum CallStatus {
     case unconnected
     case idle
     case joined
-    case joinFailed
+    case peerJoined
     case disconnected
 }

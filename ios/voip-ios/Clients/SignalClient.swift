@@ -50,6 +50,8 @@ final class SignalClientImpl: SignalClient {
             self.continuation.yield(.joined)
         case .joinFailed:
             self.continuation.yield(.joinFailed)
+        case .peerJoined:
+            self.continuation.yield(.peerJoined)
         }
     }
 

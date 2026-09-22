@@ -37,7 +37,11 @@ class CallingViewModel {
                 case .joined:
                     callStatus = .joined
                 case .joinFailed:
-                    callStatus = .joinFailed
+                    callStatus = .disconnected
+                case .peerJoined:
+                    callStatus = .peerJoined
+                case .peerLeft:
+                    callStatus = .disconnected
                 }
             }
         }

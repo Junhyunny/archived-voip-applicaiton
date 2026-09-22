@@ -53,7 +53,15 @@ struct CallingViewModelTests {
         }
         mockSignalClient.continuation.yield(.joinFailed)
         try await waitUntil(timeout: Duration.seconds(5)) {
-            sut.callStatus == .joinFailed
+            sut.callStatus == .disconnected
+        }
+        mockSignalClient.continuation.yield(.peerJoined)
+        try await waitUntil(timeout: Duration.seconds(5)) {
+            sut.callStatus == .peerJoined
+        }
+        mockSignalClient.continuation.yield(.peerLeft)
+        try await waitUntil(timeout: Duration.seconds(5)) {
+            sut.callStatus == .disconnected
         }
     }
 

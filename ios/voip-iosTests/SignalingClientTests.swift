@@ -151,4 +151,40 @@ struct SignalingClientTests {
             #expect(event == .joinFailed)
         }
     }
+    
+    @Test
+    func
+        given_peer_joined_when_join_then_peer_joined_signaling_event_yield()
+        async throws
+    {
+        let mockStore = MockMessageStore()
+        await mockStore.setResponse(
+            WSMessage.text(
+                """
+                {
+                    "type": "peer_joined"
+                }
+                """
+            )
+        )
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                MockWSMessageHandler(store: mockStore),
+            ),
+        ) { port in
+            let sut = SignalClientImpl(
+                url: URL(string: "ws://localhost:\(port)/signaling")!
+            )
+            var iterator = sut.events.makeAsyncIterator()
+            try await sut.connect()
+            _ = await iterator.next()
+
+            try await sut.join(roomCode: "1234")
+
+            let event = await iterator.next()
+            #expect(event == .peerJoined)
+        }
+    }
 }
