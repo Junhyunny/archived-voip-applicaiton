@@ -10,19 +10,24 @@ import SwiftUI
 
 struct AppConfiguration {
     var timeLimitSeconds: Int = 60
+    var signalingURL: URL = URL(string: "ws://localhost:8080/signaling")!
 
     static func fromLaunchEnvironment() -> AppConfiguration {
-        var configration = AppConfiguration()
+        var configuration = AppConfiguration()
         #if DEBUG
-            if let timeLimitSeconds = ProcessInfo.processInfo.environment[
-                "CALL_TIME_LIMIT_SECONDS"
-            ],
+            let environment = ProcessInfo.processInfo.environment
+            if let timeLimitSeconds = environment["CALL_TIME_LIMIT_SECONDS"],
                 let seconds = Int(timeLimitSeconds), seconds > 0
             {
-                configration.timeLimitSeconds = seconds
+                configuration.timeLimitSeconds = seconds
+            }
+            if let signalingURL = environment["SIGNALING_URL"],
+                let url = URL(string: signalingURL)
+            {
+                configuration.signalingURL = url
             }
         #endif
-        return configration
+        return configuration
     }
 }
 

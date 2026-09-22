@@ -7,9 +7,9 @@
 
 
 enum SignalEvent {
-    case connect
+    case connected
     case joined
-    case join_failed
+    case joinFailed
     // case peerJoined
     // case offer(String)
     // case answer(String)

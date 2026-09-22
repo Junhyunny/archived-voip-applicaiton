@@ -31,9 +31,9 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
 
-        #expect(mockSignalClient.connect_called_times == 1)
-        #expect(mockSignalClient.join_called_times == 1)
-        #expect(mockSignalClient.join_roomCode == "1234")
+        #expect(mockSignalClient.connectCalledTimes == 1)
+        #expect(mockSignalClient.joinCalledTimes == 1)
+        #expect(mockSignalClient.joinRoomCode == "1234")
     }
 
     @Test
@@ -43,7 +43,7 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
 
-        mockSignalClient.continuation.yield(.connect)
+        mockSignalClient.continuation.yield(.connected)
         try await waitUntil(timeout: Duration.seconds(5)) {
             sut.callStatus == .idle
         }
@@ -51,9 +51,9 @@ struct CallingViewModelTests {
         try await waitUntil(timeout: Duration.seconds(5)) {
             sut.callStatus == .joined
         }
-        mockSignalClient.continuation.yield(.join_failed)
+        mockSignalClient.continuation.yield(.joinFailed)
         try await waitUntil(timeout: Duration.seconds(5)) {
-            sut.callStatus == .join_failed
+            sut.callStatus == .joinFailed
         }
     }
 
@@ -62,7 +62,7 @@ struct CallingViewModelTests {
         `given connect throws error when start call then call status is disconnected`()
         async throws
     {
-        mockSignalClient.connect_error = MockSignalError.sample
+        mockSignalClient.connectError = MockSignalError.sample
 
         await sut.startCall(roomCode: "1234")
 
@@ -74,7 +74,7 @@ struct CallingViewModelTests {
         `given join throws error when start call then call status is disconnected`()
         async throws
     {
-        mockSignalClient.join_error = MockSignalError.sample
+        mockSignalClient.joinError = MockSignalError.sample
 
         await sut.startCall(roomCode: "1234")
 

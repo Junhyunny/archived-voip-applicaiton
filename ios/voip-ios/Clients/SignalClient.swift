@@ -48,8 +48,8 @@ final class SignalClientImpl: SignalClient {
         switch response.type {
         case .joined:
             self.continuation.yield(.joined)
-        case .join_failed:
-            self.continuation.yield(.join_failed)
+        case .joinFailed:
+            self.continuation.yield(.joinFailed)
         }
     }
 
@@ -98,7 +98,7 @@ final class SignalClientImpl: SignalClient {
         try await sendPing(task)
         self.receive(task)
         self.task = task
-        self.continuation.yield(.connect)
+        self.continuation.yield(.connected)
     }
 
     func join(roomCode: String) async throws {

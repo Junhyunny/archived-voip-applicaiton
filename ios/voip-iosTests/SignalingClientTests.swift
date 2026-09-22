@@ -34,7 +34,7 @@ struct SignalingClientTests {
             try await sut.connect()
 
             let event = await iterator.next()
-            #expect(event == .connect)
+            #expect(event == .connected)
         }
     }
 
@@ -148,7 +148,7 @@ struct SignalingClientTests {
             try await sut.join(roomCode: "1234")
 
             let event = await iterator.next()
-            #expect(event == .join_failed)
+            #expect(event == .joinFailed)
         }
     }
 }

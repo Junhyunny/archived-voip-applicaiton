@@ -32,12 +32,12 @@ class CallingViewModel {
         Task {
             for await signalEvent in signalClient.events {
                 switch signalEvent {
-                case .connect:
+                case .connected:
                     callStatus = .idle
                 case .joined:
                     callStatus = .joined
-                case .join_failed:
-                    callStatus = .join_failed
+                case .joinFailed:
+                    callStatus = .joinFailed
                 }
             }
         }

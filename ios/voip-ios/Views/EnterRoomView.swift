@@ -42,7 +42,8 @@ struct EnterRoomView: View {
             .navigationDestination(for: String.self) { code in
                 CallingView(
                     roomCode: code,
-                    timeLimitSeconds: appConfig.timeLimitSeconds
+                    timeLimitSeconds: appConfig.timeLimitSeconds,
+                    signalingURL: appConfig.signalingURL
                 )
             }
             .accessibilityIdentifier("call_button")

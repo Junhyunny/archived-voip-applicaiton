@@ -14,7 +14,7 @@ struct CallingView: View {
 
     private let roomCode: String
 
-    init(roomCode: String, timeLimitSeconds: Int) {
+    init(roomCode: String, timeLimitSeconds: Int, signalingURL: URL) {
         self.roomCode = roomCode
         _timer = State(
             initialValue: CountDownTimer(
@@ -23,9 +23,7 @@ struct CallingView: View {
         )
         _vm = State(
             initialValue: CallingViewModel(
-                signalClient: SignalClientImpl(
-                    url: URL(string: "ws://localhost:8080/signaling")!
-                )
+                signalClient: SignalClientImpl(url: signalingURL)
             )
         )
     }
@@ -45,8 +43,9 @@ struct CallingView: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("calling_view")
         .task {
-            await self.vm.startCall(roomCode: roomCode)
-            await timer.startTimer()
+            async let startCall = self.vm.startCall(roomCode: roomCode)
+            async let startTimer = timer.startTimer()
+            _ = await (startCall, startTimer)
         }
         .onChange(of: timer.time) { _, new in
             if new == 0 {
@@ -57,5 +56,9 @@ struct CallingView: View {
 }
 
 #Preview {
-    CallingView(roomCode: "0000", timeLimitSeconds: 60)
+    CallingView(
+        roomCode: "0000",
+        timeLimitSeconds: 60,
+        signalingURL: AppConfiguration().signalingURL
+    )
 }

@@ -7,5 +7,5 @@
 
 enum SignalResponseType: String, Codable {
     case joined = "joined"
-    case join_failed = "join_failed"
+    case joinFailed = "join_failed"
 }

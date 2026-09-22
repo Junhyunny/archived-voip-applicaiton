@@ -12,11 +12,11 @@ enum MockSignalError: Error {
 }
 
 class MockSignalClient: SignalClient {
-    private(set) var connect_called_times: Int = 0
-    private(set) var join_called_times: Int = 0
-    private(set) var join_roomCode: String?
-    var connect_error: MockSignalError?
-    var join_error: MockSignalError?
+    private(set) var connectCalledTimes: Int = 0
+    private(set) var joinCalledTimes: Int = 0
+    private(set) var joinRoomCode: String?
+    var connectError: MockSignalError?
+    var joinError: MockSignalError?
 
     let events: AsyncStream<voip_ios.SignalEvent>
     private(set) var continuation: AsyncStream<SignalEvent>.Continuation
@@ -30,16 +30,16 @@ class MockSignalClient: SignalClient {
     }
 
     func connect() async throws {
-        connect_called_times += 1
-        if let error = connect_error {
+        connectCalledTimes += 1
+        if let error = connectError {
             throw error
         }
     }
 
     func join(roomCode: String) async throws {
-        join_called_times += 1
-        join_roomCode = roomCode
-        if let error = join_error {
+        joinCalledTimes += 1
+        joinRoomCode = roomCode
+        if let error = joinError {
             throw error
         }
     }
