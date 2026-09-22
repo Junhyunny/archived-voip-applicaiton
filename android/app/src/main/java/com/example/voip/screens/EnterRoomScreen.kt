@@ -39,9 +39,7 @@ fun EnterRoomScreen() {
                 )
             }
         }
-        Keypad(onKeyPress = {
-            roomCode += it.label
-        })
+        Keypad(onKeyPress = { roomCode += it.label })
         Button(
             onClick = {},
             enabled = roomCode.length == 4,
