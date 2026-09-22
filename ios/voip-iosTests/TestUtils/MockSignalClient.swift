@@ -7,7 +7,7 @@
 
 @testable import voip_ios
 
-enum MockSingalError: Error {
+enum MockSignalError: Error {
     case sample
 }
 
@@ -15,8 +15,8 @@ class MockSignalClient: SignalClient {
     private(set) var connect_called_times: Int = 0
     private(set) var join_called_times: Int = 0
     private(set) var join_roomCode: String?
-    var connect_error: MockSingalError?
-    var join_error: MockSingalError?
+    var connect_error: MockSignalError?
+    var join_error: MockSignalError?
 
     let events: AsyncStream<voip_ios.SignalEvent>
     private(set) var continuation: AsyncStream<SignalEvent>.Continuation

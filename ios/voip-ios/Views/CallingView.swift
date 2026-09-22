@@ -5,12 +5,11 @@
 //  Created by 강준현 on 9/18/26.
 //
 
-import OSLog
 import SwiftUI
 
 struct CallingView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var timer: Timer
+    @State private var timer: CountDownTimer
     @State private var vm: CallingViewModel
 
     private let roomCode: String
@@ -18,7 +17,7 @@ struct CallingView: View {
     init(roomCode: String, timeLimitSeconds: Int) {
         self.roomCode = roomCode
         _timer = State(
-            initialValue: Timer(
+            initialValue: CountDownTimer(
                 limit: timeLimitSeconds
             )
         )
@@ -46,8 +45,8 @@ struct CallingView: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("calling_view")
         .task {
-            timer.startTimer()
             await self.vm.startCall(roomCode: roomCode)
+            await timer.startTimer()
         }
         .onChange(of: timer.time) { _, new in
             if new == 0 {

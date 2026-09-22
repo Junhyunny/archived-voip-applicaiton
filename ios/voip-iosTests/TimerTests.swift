@@ -14,7 +14,7 @@ struct TimerTests {
 
     @Test
     func default_timer_seconds_is_60() throws {
-        let sut = Timer(limit: 60)
+        let sut = CountDownTimer(limit: 60)
 
         #expect(sut.time == 60)
     }
@@ -22,7 +22,7 @@ struct TimerTests {
     @Test
     func when_start_timer_then_timer_seconds_is_decreased_by_1() async throws {
         let testTimerClock = TestTimerClock()
-        let sut = Timer(
+        let sut = CountDownTimer(
             limit: 60,
             timerClock: testTimerClock
         )

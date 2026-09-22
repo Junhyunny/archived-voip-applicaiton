@@ -23,6 +23,7 @@ class CallingViewModel {
         } catch {
             print("error occurs: ", error)
             self.callStatus = .disconnected
+            return
         }
         observeSignalEvents()
     }

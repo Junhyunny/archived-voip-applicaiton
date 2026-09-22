@@ -18,7 +18,7 @@ struct RealTimerClock: TimerClock {
 }
 
 @Observable
-class Timer {
+class CountDownTimer {
     private(set) var time: Int
     private let limit: Int
     private let timerClock: TimerClock
@@ -30,17 +30,15 @@ class Timer {
     }
 
     @MainActor
-    func startTimer() {
-        Task {
-            time = limit
-            while time > 0 {
-                do {
-                    try await timerClock.sleepOneSecond()
-                } catch {
-                    return
-                }
-                time -= 1
+    func startTimer() async {
+        time = limit
+        while time > 0 {
+            do {
+                try await timerClock.sleepOneSecond()
+            } catch {
+                return
             }
+            time -= 1
         }
     }
 }

@@ -6,5 +6,5 @@
 //
 
 struct SignalResponse: Codable {
-    let type: SingalResponseType
+    let type: SignalResponseType
 }

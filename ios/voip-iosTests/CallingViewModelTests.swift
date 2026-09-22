@@ -62,7 +62,7 @@ struct CallingViewModelTests {
         `given connect throws error when start call then call status is disconnected`()
         async throws
     {
-        mockSignalClient.connect_error = MockSingalError.sample
+        mockSignalClient.connect_error = MockSignalError.sample
 
         await sut.startCall(roomCode: "1234")
 
@@ -74,7 +74,7 @@ struct CallingViewModelTests {
         `given join throws error when start call then call status is disconnected`()
         async throws
     {
-        mockSignalClient.join_error = MockSingalError.sample
+        mockSignalClient.join_error = MockSignalError.sample
 
         await sut.startCall(roomCode: "1234")
 
