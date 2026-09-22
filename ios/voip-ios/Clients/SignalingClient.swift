@@ -86,7 +86,7 @@ final class SignalingClient {
         switch message {
         case .string(let text):
             handleTextMessage(text)
-        case .data(let data):
+        case .data:
             // TODO, not handle data case
             break
         @unknown default:
@@ -100,7 +100,7 @@ final class SignalingClient {
             case .success(let message):
                 self?.handleMessage(message)
             case .failure(let error):
-                print("websocket messege recive error \(error)")
+                print("websocket messege receive error \(error)")
             }
             self?.receive(task)
         }

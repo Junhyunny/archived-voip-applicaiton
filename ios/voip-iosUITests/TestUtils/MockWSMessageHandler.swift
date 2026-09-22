@@ -40,7 +40,7 @@ final class MockWSMessageHandler: WSMessageHandler {
                         await store.append(text)
                     }
                     let stub = await store.response
-                    
+
                     continuation.yield(stub)
                 }
                 continuation.finish()
@@ -66,16 +66,12 @@ func withMockServer(
     Task {
         do {
             try await server.run()
-            try await server.waitUntilListening()
         } catch {
             print("server error:", error)
         }
     }
-    do {
-        try await body(port)
-    } catch {
-        throw error
-    }
+    try await server.waitUntilListening()
+    try await body(port)
 }
 
 func parseMessage(messages: [String]) throws -> [[String: Any?]] {

@@ -38,13 +38,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A60009C6305D488C008B8B70 /* Exceptions for "voip-ios" folder in "voip-iosTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Configurations/AppConfiguration.swift,
-			);
-			target = A6D23776305BBE5400A12732 /* voip-iosTests */;
-		};
 		A62306D63061697000467B7C /* Exceptions for "voip-iosUITests" folder in "voip-iosTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -57,9 +50,6 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A6D2376C305BBE5300A12732 /* voip-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A60009C6305D488C008B8B70 /* Exceptions for "voip-ios" folder in "voip-iosTests" target */,
-			);
 			path = "voip-ios";
 			sourceTree = "<group>";
 		};

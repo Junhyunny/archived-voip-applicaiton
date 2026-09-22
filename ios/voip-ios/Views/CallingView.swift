@@ -8,11 +8,6 @@
 import OSLog
 import SwiftUI
 
-private let logger = Logger(
-    subsystem: "com.example.voip-ios",
-    category: "Signaling"
-)
-
 struct JoinMessage: Codable {
     let type = "join"
     let roomCode: String
@@ -57,7 +52,6 @@ struct CallingView: View {
                 let data = try JSONEncoder().encode(message)
                 let string = String(decoding: data, as: UTF8.self)
                 try await webSocketTask.send(.string(string))
-                logger.info("CLIENT SENT: \(string)")
                 let response = try await webSocketTask.receive()
                 switch response {
                 case .string(let text):
@@ -68,7 +62,6 @@ struct CallingView: View {
                     break
                 }
             } catch {
-                logger.info("websocket error: \(error)")
             }
             await vm.startTimer()
         }

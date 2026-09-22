@@ -43,12 +43,11 @@ final class CallingViewUITests: XCTestCase {
         _ = Task {
             do {
                 try await server.run()
-                try await server.waitUntilListening()
             } catch {
                 print("server error:", error)
             }
         }
-
+        try? await server.waitUntilListening()
         return server
     }
 
