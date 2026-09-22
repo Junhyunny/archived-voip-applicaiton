@@ -16,20 +16,13 @@ enum class KeypadKey(val label: String) {
     Empty(""), Zero("0"), Delete("delete"),
 }
 
-val keypad = listOf(
-    KeypadKey.One, KeypadKey.Two, KeypadKey.Three,
-    KeypadKey.Four, KeypadKey.Five, KeypadKey.Six,
-    KeypadKey.Seven, KeypadKey.Eight, KeypadKey.Nine,
-    KeypadKey.Empty, KeypadKey.Zero, KeypadKey.Delete,
-)
-
 @Composable
 fun Keypad(onKeyPress: (KeypadKey) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier.testTag("keypad")
     ) {
-        items(keypad) { item ->
+        items(KeypadKey.entries) { item ->
             Button(modifier = Modifier, onClick = { onKeyPress(item) }) { Text(item.label) }
         }
     }
