@@ -7,38 +7,38 @@
 
 import Foundation
 
-nonisolated protocol TimerClock {
-    func sleepOneSecond() async throws
-}
-
-struct RealTimerClock: TimerClock {
-    func sleepOneSecond() async throws {
-        try await Task.sleep(for: .seconds(1))
-    }
-}
-
 @Observable
 class CallingViewModel {
+    private(set) var callStatus: CallStatus = .unconnected
+    private var signalClient: SignalClient
 
-    private(set) var time: Int
-    private let limit: Int
-    private let timerClock: TimerClock
-
-    init(limit: Int, timerClock: TimerClock = RealTimerClock()) {
-        self.time = limit
-        self.limit = limit
-        self.timerClock = timerClock
+    init(signalClient: SignalClient) {
+        self.signalClient = signalClient
     }
 
-    func startTimer() async {
-        time = limit
-        while time > 0 {
-            do {
-                try await timerClock.sleepOneSecond()
-            } catch {
-                return
+    func startCall(roomCode: String) async {
+        do {
+            try await signalClient.connect()
+            try await signalClient.join(roomCode: roomCode)
+        } catch {
+            print("error occurs: ", error)
+            self.callStatus = .disconnected
+        }
+        observeSignalEvents()
+    }
+
+    private func observeSignalEvents() {
+        Task {
+            for await signalEvent in signalClient.events {
+                switch signalEvent {
+                case .connect:
+                    callStatus = .idle
+                case .joined:
+                    callStatus = .joined
+                case .join_failed:
+                    callStatus = .join_failed
+                }
             }
-            time -= 1
         }
     }
 }

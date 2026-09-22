@@ -7,42 +7,28 @@
 
 import Foundation
 
-enum CallingStatus {
-    case not_connected
-    case idle
-    case joined
-    case join_failed
+protocol SignalClient {
+    var events: AsyncStream<SignalEvent> { get }
+
+    func connect() async throws
+    func join(roomCode: String) async throws
 }
 
-enum ResponseType: String, Codable {
-    case joined = "joined"
-    case join_failed = "join_failed"
-}
+final class SignalClientImpl: SignalClient {
 
-enum MessageType: String, Codable {
-    case join = "join"
-}
-
-enum SignalingError: Error {
-    case taskNotCreated
-}
-
-struct SignalingResponse: Codable {
-    let type: ResponseType
-}
-
-struct JoiningMessage: Codable {
-    let type: MessageType
-    let roomCode: String
-}
-
-final class SignalingClient {
     private let url: URL
     private var task: URLSessionWebSocketTask?
-    private(set) var callingStatus: CallingStatus = .not_connected
+    private var continuation: AsyncStream<SignalEvent>.Continuation
+
+    var events: AsyncStream<SignalEvent>
 
     init(url: URL) {
         self.url = url
+        var continuation: AsyncStream<SignalEvent>.Continuation!
+        self.events = AsyncStream { streamContinuation in
+            continuation = streamContinuation
+        }
+        self.continuation = continuation
     }
 
     private func sendPing(_ task: URLSessionWebSocketTask) async throws {
@@ -58,12 +44,12 @@ final class SignalingClient {
         }
     }
 
-    private func handleSignalingResponse(_ response: SignalingResponse) {
+    private func handleSignalingResponse(_ response: SignalResponse) {
         switch response.type {
         case .joined:
-            self.callingStatus = .joined
+            self.continuation.yield(.joined)
         case .join_failed:
-            self.callingStatus = .join_failed
+            self.continuation.yield(.join_failed)
         }
     }
 
@@ -73,7 +59,7 @@ final class SignalingClient {
         }
         do {
             let response = try JSONDecoder().decode(
-                SignalingResponse.self,
+                SignalResponse.self,
                 from: data
             )
             handleSignalingResponse(response)
@@ -112,14 +98,14 @@ final class SignalingClient {
         try await sendPing(task)
         self.receive(task)
         self.task = task
-        self.callingStatus = .idle
+        self.continuation.yield(.connect)
     }
 
     func join(roomCode: String) async throws {
         guard let task = self.task else {
-            throw SignalingError.taskNotCreated
+            throw SignalError.taskNotCreated
         }
-        let message = JoiningMessage(
+        let message = JoinRequest(
             type: .join,
             roomCode: roomCode
         )

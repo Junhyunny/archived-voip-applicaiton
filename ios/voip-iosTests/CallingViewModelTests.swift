@@ -12,36 +12,72 @@ import Testing
 @MainActor
 struct CallingViewModelTests {
 
-    @Test
-    func default_timer_seconds_is_60() throws {
-        let sut = CallingViewModel(limit: 60)
+    var mockSignalClient: MockSignalClient
+    var sut: CallingViewModel
 
-        #expect(sut.time == 60)
+    init() throws {
+        self.mockSignalClient = MockSignalClient()
+        self.sut = CallingViewModel(signalClient: mockSignalClient)
+    }
+
+    @Test func `initial call status is unconnected`() async throws {
+        #expect(sut.callStatus == .unconnected)
     }
 
     @Test
-    func when_start_timer_then_timer_seconds_is_decreased_by_1() async throws {
-        let testTimerClock = TestTimerClock()
-        let sut = CallingViewModel(
-            limit: 60,
-            timerClock: testTimerClock
-        )
+    func
+        `when start call then signalClinet's connect, join funciton are called`()
+        async throws
+    {
+        await sut.startCall(roomCode: "1234")
 
-        Task {
-            await sut.startTimer()
+        #expect(mockSignalClient.connect_called_times == 1)
+        #expect(mockSignalClient.join_called_times == 1)
+        #expect(mockSignalClient.join_roomCode == "1234")
+    }
+
+    @Test
+    func
+        `when start call then signalClinet's signal event is observed`()
+        async throws
+    {
+        await sut.startCall(roomCode: "1234")
+
+        mockSignalClient.continuation.yield(.connect)
+        try await waitUntil(timeout: Duration.seconds(5)) {
+            sut.callStatus == .idle
         }
+        mockSignalClient.continuation.yield(.joined)
+        try await waitUntil(timeout: Duration.seconds(5)) {
+            sut.callStatus == .joined
+        }
+        mockSignalClient.continuation.yield(.join_failed)
+        try await waitUntil(timeout: Duration.seconds(5)) {
+            sut.callStatus == .join_failed
+        }
+    }
 
-        await testTimerClock.waitForSleeper()
-        await testTimerClock.advanceOneSecond()
-        await testTimerClock.waitForSleeper()
-        #expect(sut.time == 59)
+    @Test
+    func
+        `given connect throws error when start call then call status is disconnected`()
+        async throws
+    {
+        mockSignalClient.connect_error = MockSingalError.sample
 
-        await testTimerClock.advanceOneSecond()
-        await testTimerClock.waitForSleeper()
-        #expect(sut.time == 58)
+        await sut.startCall(roomCode: "1234")
 
-        await testTimerClock.advanceOneSecond()
-        await testTimerClock.waitForSleeper()
-        #expect(sut.time == 57)
+        #expect(sut.callStatus == .disconnected)
+    }
+    
+    @Test
+    func
+        `given join throws error when start call then call status is disconnected`()
+        async throws
+    {
+        mockSignalClient.join_error = MockSingalError.sample
+
+        await sut.startCall(roomCode: "1234")
+
+        #expect(sut.callStatus == .disconnected)
     }
 }
