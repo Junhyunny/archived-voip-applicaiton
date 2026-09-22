@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		A62306943060B45100467B7C /* FlyingFox in Frameworks */ = {isa = PBXBuildFile; productRef = A62306933060B45100467B7C /* FlyingFox */; };
 		A62306963060B45100467B7C /* FlyingSocks in Frameworks */ = {isa = PBXBuildFile; productRef = A62306953060B45100467B7C /* FlyingSocks */; };
+		A62306D93061721500467B7C /* FlyingFox in Frameworks */ = {isa = PBXBuildFile; productRef = A62306D83061721500467B7C /* FlyingFox */; };
+		A62306DB3061721500467B7C /* FlyingSocks in Frameworks */ = {isa = PBXBuildFile; productRef = A62306DA3061721500467B7C /* FlyingSocks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +45,13 @@
 			);
 			target = A6D23776305BBE5400A12732 /* voip-iosTests */;
 		};
+		A62306D63061697000467B7C /* Exceptions for "voip-iosUITests" folder in "voip-iosTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				TestUtils/MockWSMessageHandler.swift,
+			);
+			target = A6D23776305BBE5400A12732 /* voip-iosTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -61,6 +70,9 @@
 		};
 		A6D23784305BBE5400A12732 /* voip-iosUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A62306D63061697000467B7C /* Exceptions for "voip-iosUITests" folder in "voip-iosTests" target */,
+			);
 			path = "voip-iosUITests";
 			sourceTree = "<group>";
 		};
@@ -78,6 +90,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A62306D93061721500467B7C /* FlyingFox in Frameworks */,
+				A62306DB3061721500467B7C /* FlyingSocks in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +107,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A62306D73061721500467B7C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A6D23761305BBE5300A12732 = {
 			isa = PBXGroup;
 			children = (
@@ -100,6 +121,7 @@
 				A6D2376C305BBE5300A12732 /* voip-ios */,
 				A6D2377A305BBE5400A12732 /* voip-iosTests */,
 				A6D23784305BBE5400A12732 /* voip-iosUITests */,
+				A62306D73061721500467B7C /* Frameworks */,
 				A6D2376B305BBE5300A12732 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -157,6 +179,8 @@
 			);
 			name = "voip-iosTests";
 			packageProductDependencies = (
+				A62306D83061721500467B7C /* FlyingFox */,
+				A62306DA3061721500467B7C /* FlyingSocks */,
 			);
 			productName = "voip-iosTests";
 			productReference = A6D23777305BBE5400A12732 /* voip-iosTests.xctest */;
@@ -624,6 +648,16 @@
 			productName = FlyingFox;
 		};
 		A62306953060B45100467B7C /* FlyingSocks */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A62306923060B45100467B7C /* XCRemoteSwiftPackageReference "FlyingFox" */;
+			productName = FlyingSocks;
+		};
+		A62306D83061721500467B7C /* FlyingFox */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A62306923060B45100467B7C /* XCRemoteSwiftPackageReference "FlyingFox" */;
+			productName = FlyingFox;
+		};
+		A62306DA3061721500467B7C /* FlyingSocks */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A62306923060B45100467B7C /* XCRemoteSwiftPackageReference "FlyingFox" */;
 			productName = FlyingSocks;
