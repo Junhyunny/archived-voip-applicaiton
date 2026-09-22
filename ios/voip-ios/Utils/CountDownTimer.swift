@@ -31,7 +31,7 @@ class CountDownTimer {
 
     @MainActor
     func startTimer() async {
-        time = limit
+        time = limit    
         while time > 0 {
             do {
                 try await timerClock.sleepOneSecond()

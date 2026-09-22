@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D51C1F44A7037675D54510F /* Pods_voip_iosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 923798ED891A2A13469672D8 /* Pods_voip_iosTests.framework */; };
+		43117BAD572C35A18EC71441 /* Pods_voip_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA60F7A136D3B10739490BB3 /* Pods_voip_ios.framework */; };
+		8F36569D405766ADEF543443 /* Pods_voip_ios_voip_iosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD34D7A088775323D6E8CD7D /* Pods_voip_ios_voip_iosUITests.framework */; };
 		A62306943060B45100467B7C /* FlyingFox in Frameworks */ = {isa = PBXBuildFile; productRef = A62306933060B45100467B7C /* FlyingFox */; };
 		A62306963060B45100467B7C /* FlyingSocks in Frameworks */ = {isa = PBXBuildFile; productRef = A62306953060B45100467B7C /* FlyingSocks */; };
 		A62306D93061721500467B7C /* FlyingFox in Frameworks */ = {isa = PBXBuildFile; productRef = A62306D83061721500467B7C /* FlyingFox */; };
@@ -31,10 +34,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		176C3104637805907BE598FB /* Pods-voip-ios-voip-iosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-voip-ios-voip-iosUITests.debug.xcconfig"; path = "Target Support Files/Pods-voip-ios-voip-iosUITests/Pods-voip-ios-voip-iosUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		34C32AE6D5C2A9A0AE113251 /* Pods-voip-iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-voip-iosTests.release.xcconfig"; path = "Target Support Files/Pods-voip-iosTests/Pods-voip-iosTests.release.xcconfig"; sourceTree = "<group>"; };
+		3FBFB7DD60192BCA3BBF6992 /* Pods-voip-ios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-voip-ios.debug.xcconfig"; path = "Target Support Files/Pods-voip-ios/Pods-voip-ios.debug.xcconfig"; sourceTree = "<group>"; };
+		7B944FE43A68FB571B6EEE2D /* Pods-voip-ios-voip-iosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-voip-ios-voip-iosUITests.release.xcconfig"; path = "Target Support Files/Pods-voip-ios-voip-iosUITests/Pods-voip-ios-voip-iosUITests.release.xcconfig"; sourceTree = "<group>"; };
+		923798ED891A2A13469672D8 /* Pods_voip_iosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_voip_iosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A60009C1305D2679008B8B70 /* voip-ios.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "voip-ios.xctestplan"; sourceTree = "<group>"; };
 		A6D2376A305BBE5300A12732 /* voip-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "voip-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6D23777305BBE5400A12732 /* voip-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "voip-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6D23781305BBE5400A12732 /* voip-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "voip-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD34D7A088775323D6E8CD7D /* Pods_voip_ios_voip_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_voip_ios_voip_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C386A40A795C774BBC579B21 /* Pods-voip-iosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-voip-iosTests.debug.xcconfig"; path = "Target Support Files/Pods-voip-iosTests/Pods-voip-iosTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CA60F7A136D3B10739490BB3 /* Pods_voip_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_voip_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7F751BA41BF8E58A4D8A074 /* Pods-voip-ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-voip-ios.release.xcconfig"; path = "Target Support Files/Pods-voip-ios/Pods-voip-ios.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -73,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43117BAD572C35A18EC71441 /* Pods_voip_ios.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +95,7 @@
 			files = (
 				A62306D93061721500467B7C /* FlyingFox in Frameworks */,
 				A62306DB3061721500467B7C /* FlyingSocks in Frameworks */,
+				1D51C1F44A7037675D54510F /* Pods_voip_iosTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,15 +105,32 @@
 			files = (
 				A62306943060B45100467B7C /* FlyingFox in Frameworks */,
 				A62306963060B45100467B7C /* FlyingSocks in Frameworks */,
+				8F36569D405766ADEF543443 /* Pods_voip_ios_voip_iosUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		50CB67F52358854F2C2D16D3 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3FBFB7DD60192BCA3BBF6992 /* Pods-voip-ios.debug.xcconfig */,
+				F7F751BA41BF8E58A4D8A074 /* Pods-voip-ios.release.xcconfig */,
+				176C3104637805907BE598FB /* Pods-voip-ios-voip-iosUITests.debug.xcconfig */,
+				7B944FE43A68FB571B6EEE2D /* Pods-voip-ios-voip-iosUITests.release.xcconfig */,
+				C386A40A795C774BBC579B21 /* Pods-voip-iosTests.debug.xcconfig */,
+				34C32AE6D5C2A9A0AE113251 /* Pods-voip-iosTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		A62306D73061721500467B7C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CA60F7A136D3B10739490BB3 /* Pods_voip_ios.framework */,
+				BD34D7A088775323D6E8CD7D /* Pods_voip_ios_voip_iosUITests.framework */,
+				923798ED891A2A13469672D8 /* Pods_voip_iosTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -113,6 +144,7 @@
 				A6D23784305BBE5400A12732 /* voip-iosUITests */,
 				A62306D73061721500467B7C /* Frameworks */,
 				A6D2376B305BBE5300A12732 /* Products */,
+				50CB67F52358854F2C2D16D3 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,9 +165,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A6D2378B305BBE5400A12732 /* Build configuration list for PBXNativeTarget "voip-ios" */;
 			buildPhases = (
+				5FC50B30E16457D252613D59 /* [CP] Check Pods Manifest.lock */,
 				A6D23766305BBE5300A12732 /* Sources */,
 				A6D23767305BBE5300A12732 /* Frameworks */,
 				A6D23768305BBE5300A12732 /* Resources */,
+				F5B0597E9B4569A644AE1326 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -145,8 +179,6 @@
 				A6D2376C305BBE5300A12732 /* voip-ios */,
 			);
 			name = "voip-ios";
-			packageProductDependencies = (
-			);
 			productName = "voip-ios";
 			productReference = A6D2376A305BBE5300A12732 /* voip-ios.app */;
 			productType = "com.apple.product-type.application";
@@ -155,6 +187,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A6D2378E305BBE5400A12732 /* Build configuration list for PBXNativeTarget "voip-iosTests" */;
 			buildPhases = (
+				911F031F88CB804F0B00700A /* [CP] Check Pods Manifest.lock */,
 				A6D23773305BBE5400A12732 /* Sources */,
 				A6D23774305BBE5400A12732 /* Frameworks */,
 				A6D23775305BBE5400A12732 /* Resources */,
@@ -180,9 +213,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A6D23791305BBE5400A12732 /* Build configuration list for PBXNativeTarget "voip-iosUITests" */;
 			buildPhases = (
+				415956B1A657F91908B16A20 /* [CP] Check Pods Manifest.lock */,
 				A6D2377D305BBE5400A12732 /* Sources */,
 				A6D2377E305BBE5400A12732 /* Frameworks */,
 				A6D2377F305BBE5400A12732 /* Resources */,
+				7E44F6938C393285FE879B3A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -272,6 +307,117 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		415956B1A657F91908B16A20 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-voip-ios-voip-iosUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5FC50B30E16457D252613D59 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-voip-ios-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7E44F6938C393285FE879B3A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-voip-ios-voip-iosUITests/Pods-voip-ios-voip-iosUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-voip-ios-voip-iosUITests/Pods-voip-ios-voip-iosUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-voip-ios-voip-iosUITests/Pods-voip-ios-voip-iosUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		911F031F88CB804F0B00700A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-voip-iosTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F5B0597E9B4569A644AE1326 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-voip-ios/Pods-voip-ios-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-voip-ios/Pods-voip-ios-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-voip-ios/Pods-voip-ios-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A6D23766305BBE5300A12732 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -348,7 +494,7 @@
 				DEVELOPMENT_TEAM = Z6H5892327;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -412,7 +558,7 @@
 				DEVELOPMENT_TEAM = Z6H5892327;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -433,6 +579,7 @@
 		};
 		A6D2378C305BBE5400A12732 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3FBFB7DD60192BCA3BBF6992 /* Pods-voip-ios.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -465,6 +612,7 @@
 		};
 		A6D2378D305BBE5400A12732 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F7F751BA41BF8E58A4D8A074 /* Pods-voip-ios.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -497,6 +645,7 @@
 		};
 		A6D2378F305BBE5400A12732 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C386A40A795C774BBC579B21 /* Pods-voip-iosTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -519,6 +668,7 @@
 		};
 		A6D23790305BBE5400A12732 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 34C32AE6D5C2A9A0AE113251 /* Pods-voip-iosTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -541,6 +691,7 @@
 		};
 		A6D23792305BBE5400A12732 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 176C3104637805907BE598FB /* Pods-voip-ios-voip-iosUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -561,6 +712,7 @@
 		};
 		A6D23793305BBE5400A12732 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7B944FE43A68FB571B6EEE2D /* Pods-voip-ios-voip-iosUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
