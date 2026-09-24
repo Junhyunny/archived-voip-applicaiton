@@ -1,6 +1,5 @@
 package voip.signaling.app.component
 
-import com.fasterxml.jackson.annotation.JsonValue
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.socket.TextMessage
@@ -8,38 +7,11 @@ import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.jacksonObjectMapper
-
-enum class SignalRequestType {
-    JOIN;
-
-    @JsonValue
-    fun toJson(): String = name.lowercase()
-}
-
-enum class SignalResponseType {
-    ERROR,
-    JOINED;
-
-    @JsonValue
-    fun toJson(): String = name.lowercase()
-}
-
-data class ErrorResponse(
-    val type: SignalResponseType = SignalResponseType.ERROR,
-    val code: String
-)
-
-data class SignalResponse(
-    val type: SignalResponseType
-)
-
-data class SignalRequest(
-    val type: SignalRequestType,
-    val payload: Map<String, Any?>
-)
+import voip.signaling.app.model.*
 
 class SignalWebSocketHandler(
-    val objectMapper: ObjectMapper = jacksonObjectMapper(),
+    private val objectMapper: ObjectMapper = jacksonObjectMapper(),
+    private val roomManager: RoomManager
 ) : TextWebSocketHandler() {
     private val roomCodePattern = Regex("^\\d{4}$")
     private val logger: Logger = LoggerFactory.getLogger(SignalWebSocketHandler::class.java)
@@ -51,20 +23,45 @@ class SignalWebSocketHandler(
         session.sendMessage(TextMessage(response))
     }
 
-    private fun handleJoinMessage(session: WebSocketSession, request: SignalRequest) {
-        val roomCode = request.payload["roomCode"] as? String
+    private fun joinResponsePair(roomCode: String?): Pair<SignalResponseType, TextMessage> {
         val response: String
+        val signalResponseType: SignalResponseType
         if (roomCode.isNullOrBlank() || !roomCodePattern.matches(roomCode)) {
+            signalResponseType = SignalResponseType.ERROR
             response = objectMapper.writeValueAsString(
                 ErrorResponse(code = "WRONG_ROOM_CODE")
             )
+        } else if (roomManager.isFull(roomCode)) {
+            signalResponseType = SignalResponseType.JOIN_FAILED
+            response = objectMapper.writeValueAsString(
+                SignalResponse(SignalResponseType.JOIN_FAILED)
+            )
         } else {
+            signalResponseType = SignalResponseType.JOINED
             response = objectMapper.writeValueAsString(
                 SignalResponse(SignalResponseType.JOINED)
             )
         }
+        return Pair(signalResponseType, TextMessage(response))
+    }
+
+    private fun handleJoinMessage(session: WebSocketSession, request: SignalRequest) {
+        val roomCode = request.payload["roomCode"] as? String ?: return
+        val responsePair = joinResponsePair(roomCode)
+        if (responsePair.first == SignalResponseType.JOINED) {
+            roomManager.joinRoom(roomCode, session)
+            val peers = roomManager.getPeers(roomCode, session)
+            val peerJoinedResponse = objectMapper.writeValueAsString(
+                SignalResponse(type = SignalResponseType.PEER_JOINED)
+            )
+            peers.forEach { peer ->
+                peer.sendMessage(
+                    TextMessage(peerJoinedResponse)
+                )
+            }
+        }
         session.sendMessage(
-            TextMessage(response)
+            responsePair.second
         )
     }
 
