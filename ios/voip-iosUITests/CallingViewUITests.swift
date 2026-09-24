@@ -124,7 +124,8 @@ final class CallingViewUITests: XCTestCase {
             return
         }
         XCTAssertEqual(map.count, 2)
-        XCTAssertEqual(map["roomCode"] as? String, "1234")
         XCTAssertEqual(map["type"] as? String, "join")
+        let payload: [String: Any?]? = map["payload"] as? [String: Any?]
+        XCTAssertEqual(payload?["roomCode"] as? String, "1234")
     }
 }

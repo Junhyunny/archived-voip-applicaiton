@@ -107,9 +107,9 @@ final class SignalClientImpl: SignalClient {
         guard let task = self.task else {
             throw SignalError.taskNotCreated
         }
-        let message = JoinRequest(
+        let message = SignalRequest(
             type: .join,
-            roomCode: roomCode
+            payload: JoinPayload(roomCode: roomCode)
         )
         let data = try JSONEncoder().encode(message)
         let string = String(decoding: data, as: UTF8.self)

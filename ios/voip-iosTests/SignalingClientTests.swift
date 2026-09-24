@@ -75,8 +75,9 @@ struct SignalingClientTests {
             )
             let map = parsedMessages[0]
             #expect(map.count == 2)
-            #expect(map["roomCode"] as? String == "1234")
             #expect(map["type"] as? String == "join")
+            let payload = map["payload"] as? [String: Any?]
+            #expect(payload?["roomCode"] as? String == "1234")
         }
     }
 
