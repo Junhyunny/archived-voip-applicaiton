@@ -7,9 +7,15 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
-enum class SignalType {
+enum class SignalRequestType {
+    JOIN;
+
+    @JsonValue
+    fun toJson(): String = name.lowercase()
+}
+
+enum class SignalResponseType {
     ERROR,
-    JOIN,
     JOINED;
 
     @JsonValue
@@ -17,16 +23,16 @@ enum class SignalType {
 }
 
 data class ErrorResponse(
-    val type: SignalType = SignalType.ERROR,
+    val type: SignalResponseType = SignalResponseType.ERROR,
     val code: String
 )
 
 data class SignalResponse(
-    val type: SignalType
+    val type: SignalResponseType
 )
 
 data class SignalRequest(
-    val type: SignalType,
+    val type: SignalRequestType,
     val payload: Map<String, Any?>
 )
 
@@ -48,7 +54,7 @@ class SignalWebSocketHandler(
             )
         } else {
             response = objectMapper.writeValueAsString(
-                SignalResponse(SignalType.JOINED)
+                SignalResponse(SignalResponseType.JOINED)
             )
         }
         session.sendMessage(
@@ -62,7 +68,7 @@ class SignalWebSocketHandler(
     ) {
         val request = objectMapper.readValue(message.payload, SignalRequest::class.java)
         when (request.type) {
-            SignalType.JOIN -> handleJoinMessage(session, request)
+            SignalRequestType.JOIN -> handleJoinMessage(session, request)
             else -> handleNotSupportType(session)
         }
     }
