@@ -10,7 +10,6 @@ import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 enum class SignalRequestType {
-    NOT_SUPPORTED,
     JOIN;
 
     @JsonValue
@@ -42,7 +41,7 @@ data class SignalRequest(
 class SignalWebSocketHandler(
     val objectMapper: ObjectMapper = jacksonObjectMapper(),
 ) : TextWebSocketHandler() {
-
+    private val roomCodePattern = Regex("^\\d{4}$")
     private val logger: Logger = LoggerFactory.getLogger(SignalWebSocketHandler::class.java)
 
     private fun handleNotSupportType(session: WebSocketSession) {
@@ -53,10 +52,9 @@ class SignalWebSocketHandler(
     }
 
     private fun handleJoinMessage(session: WebSocketSession, request: SignalRequest) {
-        val numberPattern = Regex("^\\d{4}$")
         val roomCode = request.payload["roomCode"] as? String
         val response: String
-        if (roomCode.isNullOrBlank() || !numberPattern.matches(roomCode)) {
+        if (roomCode.isNullOrBlank() || !roomCodePattern.matches(roomCode)) {
             response = objectMapper.writeValueAsString(
                 ErrorResponse(code = "WRONG_ROOM_CODE")
             )
@@ -74,16 +72,15 @@ class SignalWebSocketHandler(
         session: WebSocketSession,
         message: TextMessage
     ) {
-        var request: SignalRequest
-        try {
-            request = objectMapper.readValue(message.payload, SignalRequest::class.java)
+        val request: SignalRequest? = try {
+            objectMapper.readValue(message.payload, SignalRequest::class.java)
         } catch (e: Exception) {
-            request = SignalRequest(SignalRequestType.NOT_SUPPORTED, mapOf())
-            logger.error(e.message, e)
+            logger.warn(e.message, e)
+            null
         }
-        when (request.type) {
+        when (request?.type) {
             SignalRequestType.JOIN -> handleJoinMessage(session, request)
-            SignalRequestType.NOT_SUPPORTED -> handleNotSupportType(session)
+            null -> handleNotSupportType(session)
         }
     }
 }
