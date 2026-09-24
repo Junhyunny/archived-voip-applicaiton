@@ -63,4 +63,24 @@ class SignalWebSocketHandlerTest {
         """.trimIndent(), slot.captured.payload
         )
     }
+
+    @Test
+    fun given_request_type_is_malformed_when_request_then_send_error_response() {
+        val mockWebSocketSession = mockk<WebSocketSession>(relaxed = true)
+        val textMessage = TextMessage(
+            """
+            {"type":"notExisted"}
+        """.trimIndent()
+        )
+
+        sut.handleMessage(mockWebSocketSession, textMessage)
+
+        val slot = slot<TextMessage>()
+        verify { mockWebSocketSession.sendMessage(capture(slot)) }
+        assertEquals(
+            """
+            {"type":"error","code":"NOT_SUPPORTED_TYPE"}
+        """.trimIndent(), slot.captured.payload
+        )
+    }
 }

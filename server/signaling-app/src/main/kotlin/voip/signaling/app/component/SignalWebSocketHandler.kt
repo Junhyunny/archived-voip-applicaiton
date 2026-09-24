@@ -1,6 +1,8 @@
 package voip.signaling.app.component
 
 import com.fasterxml.jackson.annotation.JsonValue
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
@@ -40,14 +42,19 @@ class SignalWebSocketHandler(
     val objectMapper: ObjectMapper = jacksonObjectMapper(),
 ) : TextWebSocketHandler() {
 
-    private fun handleNotSupportType(session: WebSocketSession) {
+    private val logger: Logger = LoggerFactory.getLogger(SignalWebSocketHandler::class.java)
 
+    private fun handleNotSupportType(session: WebSocketSession) {
+        val response = objectMapper.writeValueAsString(
+            ErrorResponse(code = "NOT_SUPPORTED_TYPE")
+        )
+        session.sendMessage(TextMessage(response))
     }
 
     private fun handleJoinMessage(session: WebSocketSession, request: SignalRequest) {
         val numberPattern = Regex("^\\d{4}$")
         val roomCode = request.payload["roomCode"] as String?
-        var response: String
+        val response: String
         if (roomCode.isNullOrBlank() || !numberPattern.matches(roomCode)) {
             response = objectMapper.writeValueAsString(
                 ErrorResponse(code = "WRONG_ROOM_CODE")
@@ -66,10 +73,14 @@ class SignalWebSocketHandler(
         session: WebSocketSession,
         message: TextMessage
     ) {
-        val request = objectMapper.readValue(message.payload, SignalRequest::class.java)
-        when (request.type) {
-            SignalRequestType.JOIN -> handleJoinMessage(session, request)
-            else -> handleNotSupportType(session)
+        try {
+            val request = objectMapper.readValue(message.payload, SignalRequest::class.java)
+            when (request.type) {
+                SignalRequestType.JOIN -> handleJoinMessage(session, request)
+            }
+        } catch (e: Exception) {
+            logger.error(e.message, e)
+            handleNotSupportType(session)
         }
     }
 }
