@@ -44,23 +44,23 @@ struct CallingViewModelTests {
         await sut.startCall(roomCode: "1234")
 
         mockSignalClient.continuation.yield(.connected)
-        try await waitUntil(timeout: Duration.seconds(5)) {
+        try await waitFor(timeout: Duration.seconds(5)) {
             sut.callStatus == .idle
         }
         mockSignalClient.continuation.yield(.joined)
-        try await waitUntil(timeout: Duration.seconds(5)) {
+        try await waitFor(timeout: Duration.seconds(5)) {
             sut.callStatus == .joined
         }
         mockSignalClient.continuation.yield(.joinFailed)
-        try await waitUntil(timeout: Duration.seconds(5)) {
+        try await waitFor(timeout: Duration.seconds(5)) {
             sut.callStatus == .disconnected
         }
         mockSignalClient.continuation.yield(.peerJoined)
-        try await waitUntil(timeout: Duration.seconds(5)) {
+        try await waitFor(timeout: Duration.seconds(5)) {
             sut.callStatus == .peerJoined
         }
         mockSignalClient.continuation.yield(.peerLeft)
-        try await waitUntil(timeout: Duration.seconds(5)) {
+        try await waitFor(timeout: Duration.seconds(5)) {
             sut.callStatus == .disconnected
         }
     }

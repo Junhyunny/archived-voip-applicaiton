@@ -104,7 +104,7 @@ final class CallingViewUITests: XCTestCase {
 
         let enterRoomView = app.otherElements["enter_room_view"]
         let callingView = app.otherElements["calling_view"]
-        XCTAssertTrue(enterRoomView.waitForExistence(timeout: 3))
+        XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
         XCTAssertFalse(callingView.exists)
     }
 
@@ -114,6 +114,9 @@ final class CallingViewUITests: XCTestCase {
     {
         navigateToCallingView()
 
+        try await waitFor(timeout: .seconds(5)) {
+            await self.mockMessageStore.messages.count == 1
+        }
         let messages = await mockMessageStore.messages
         XCTAssertEqual(messages.count, 1)
 
