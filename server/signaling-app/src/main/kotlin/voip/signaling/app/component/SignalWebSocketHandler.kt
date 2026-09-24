@@ -10,6 +10,7 @@ import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 enum class SignalRequestType {
+    NOT_SUPPORTED,
     JOIN;
 
     @JsonValue
@@ -53,7 +54,7 @@ class SignalWebSocketHandler(
 
     private fun handleJoinMessage(session: WebSocketSession, request: SignalRequest) {
         val numberPattern = Regex("^\\d{4}$")
-        val roomCode = request.payload["roomCode"] as String?
+        val roomCode = request.payload["roomCode"] as? String
         val response: String
         if (roomCode.isNullOrBlank() || !numberPattern.matches(roomCode)) {
             response = objectMapper.writeValueAsString(
@@ -73,14 +74,16 @@ class SignalWebSocketHandler(
         session: WebSocketSession,
         message: TextMessage
     ) {
+        var request: SignalRequest
         try {
-            val request = objectMapper.readValue(message.payload, SignalRequest::class.java)
-            when (request.type) {
-                SignalRequestType.JOIN -> handleJoinMessage(session, request)
-            }
+            request = objectMapper.readValue(message.payload, SignalRequest::class.java)
         } catch (e: Exception) {
+            request = SignalRequest(SignalRequestType.NOT_SUPPORTED, mapOf())
             logger.error(e.message, e)
-            handleNotSupportType(session)
+        }
+        when (request.type) {
+            SignalRequestType.JOIN -> handleJoinMessage(session, request)
+            SignalRequestType.NOT_SUPPORTED -> handleNotSupportType(session)
         }
     }
 }
