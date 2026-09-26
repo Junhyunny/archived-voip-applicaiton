@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
+import org.springframework.web.socket.handler.WebSocketSessionDecorator
 
 class SignalWebSocketHandlerTest {
 
@@ -47,7 +48,10 @@ class SignalWebSocketHandlerTest {
             {"type":"joined"}
         """.trimIndent(), slot.captured.payload
         )
-        verify { mockRoomManager.joinRoom("1234", mockSenderSession) }
+
+        val joinRoomSlot = slot<WebSocketSessionDecorator>()
+        verify { mockRoomManager.joinRoom("1234", capture(joinRoomSlot)) }
+        assertEquals(mockSenderSession, joinRoomSlot.captured.delegate)
     }
 
     @ParameterizedTest
@@ -126,11 +130,14 @@ class SignalWebSocketHandlerTest {
             {"type":"joined"}
         """.trimIndent(), slot.captured.payload
         )
-        verify { mockRoomManager.joinRoom("1234", mockSenderSession) }
 
-        val peersSlot = slot<WebSocketSession>()
+        val joinRoomSlot = slot<WebSocketSessionDecorator>()
+        verify { mockRoomManager.joinRoom("1234", capture(joinRoomSlot)) }
+        assertEquals(mockSenderSession, joinRoomSlot.captured.delegate)
+
+        val peersSlot = slot<WebSocketSessionDecorator>()
         verify { mockRoomManager.getPeers("1234", capture(peersSlot)) }
-        assertEquals(mockSenderSession, peersSlot.captured)
+        assertEquals(mockSenderSession, peersSlot.captured.delegate)
 
         val peerSlot = slot<TextMessage>()
         verify { mockPeerSession.sendMessage(capture(peerSlot)) }
@@ -168,5 +175,18 @@ class SignalWebSocketHandlerTest {
         sut.handleMessage(mockSenderSession, joinMessage)
 
         verify(exactly = 0) { mockPeerSession.sendMessage(any()) }
+    }
+
+    @Test
+    fun given_peer_session_is_closed_when_join_then_do_not_propagate_exception() {
+        every { mockRoomManager.isFull(any()) } returns false
+        every { mockRoomManager.getPeers(any(), any()) } returns listOf(
+            mockPeerSession
+        )
+        every { mockPeerSession.sendMessage(any()) } throws RuntimeException()
+
+        sut.handleMessage(mockSenderSession, joinMessage)
+
+        verify(exactly = 1) { mockSenderSession.sendMessage(any()) }
     }
 }
