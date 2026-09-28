@@ -39,7 +39,7 @@ actor RemoteCandidateBuffer {
     }
 }
 
-class WebRTCClientImpl: NSObject, WebRTCClient {
+nonisolated class WebRTCClientImpl: NSObject, WebRTCClient {
     private static let defaultFactory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
         return RTCPeerConnectionFactory()

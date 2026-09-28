@@ -11,6 +11,7 @@ import XCTest
 
 @testable import voip_ios
 
+@Suite(.timeLimit(.minutes(1)))
 @MainActor
 struct SignalingClientTests {
 
