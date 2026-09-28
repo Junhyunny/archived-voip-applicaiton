@@ -26,13 +26,13 @@ actor MockMessageStore {
 final class MockWSMessageHandler: WSMessageHandler {
 
     let store: MockMessageStore
-    let asyncSrteam: AsyncStream<WSMessage>
+    let outboundStream: AsyncStream<WSMessage>
     let continuation: AsyncStream<WSMessage>.Continuation
 
     init(store: MockMessageStore) {
         self.store = store
         var continuation: AsyncStream<WSMessage>.Continuation!
-        asyncSrteam = AsyncStream { streamContinuation in
+        outboundStream = AsyncStream { streamContinuation in
             continuation = streamContinuation
         }
         self.continuation = continuation
@@ -55,7 +55,7 @@ final class MockWSMessageHandler: WSMessageHandler {
             }
             continuation.finish()
         }
-        return asyncSrteam
+        return outboundStream
     }
 }
 
@@ -83,15 +83,11 @@ func withMockServer(
     guard let address = await server.listeningAddress else {
         throw MockServerError.notFoundAddress
     }
-    var port: UInt16 = 0
-    switch address {
-    case .ip4(_, let portNumber):
-        port = portNumber
-    case .ip6(_, let portNumber):
-        port = portNumber
-    case .unix:
-        throw MockServerError.notFoundPort
-    }
+    let port: UInt16 =
+        switch address {
+        case .ip4(_, let portNumber), .ip6(_, let portNumber): portNumber
+        case .unix: throw MockServerError.notFoundPort
+        }
     try await body(port)
 }
 

@@ -41,6 +41,5 @@ struct SignalResponse: Decodable {
         case .joined, .joinFailed, .peerJoined, .peerLeft:
             self.payload = nil
         }
-
     }
 }
