@@ -30,7 +30,7 @@ extension WebRTCClientImpl: RTCPeerConnectionDelegate {
     }
 
     func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        print("peer connection is finished at the firt time. no re-negotiation")
+        print("peer connection is finished at the first time. no re-negotiation")
     }
 
     func peerConnection(

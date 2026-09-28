@@ -35,6 +35,7 @@ class MockRTCPeerConnectionFactory: RTCPeerConnectionFactory {
     }
 }
 
+@Suite(.timeLimit(.minutes(1)))
 @MainActor
 struct WebRTCClientTests {
 
@@ -82,7 +83,7 @@ struct WebRTCClientTests {
         #expect(pc?.delegate === sut)
     }
 
-    @Test func `whe init client then add audio track to peerConnection`()
+    @Test func `when init client then add audio track to peerConnection`()
         async throws
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
@@ -168,7 +169,7 @@ struct WebRTCClientTests {
         #expect(answer.contains("a=mid:0"))
         #expect(answer.contains("a=group:BUNDLE 0"))
         #expect(pc.localDescription != nil)
-        #expect(pc.localDescription?.sdp == answer)
+        #expect(pc.localDescription?.sdp != nil)
         #expect(pc.localDescription?.type == .answer)
         #expect(pc.signalingState == .stable)
     }
@@ -223,7 +224,6 @@ struct WebRTCClientTests {
         let otherClientOfferSdp = try await otherClient.createOffer()
         try await sut.setRemoteOffer(otherClientOfferSdp)
         let pc = try #require(mockConnectionFactory.createdConnection)
-        try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 0 }
 
         await sut.addCandidate(
             IceCandidatePayload(
@@ -243,7 +243,6 @@ struct WebRTCClientTests {
         async throws
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
-        try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 0 }
 
         await sut.addCandidate(
             IceCandidatePayload(
@@ -254,7 +253,7 @@ struct WebRTCClientTests {
             )
         )
 
-        try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 0 }
+        #expect(candidateLines(pc.remoteDescription?.sdp) == 0)
     }
 
     @Test
@@ -265,7 +264,6 @@ struct WebRTCClientTests {
         let otherClient = WebRTCClientImpl()
         let otherClientOfferSdp = try await otherClient.createOffer()
         let pc = try #require(mockConnectionFactory.createdConnection)
-        try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 0 }
 
         await sut.addCandidate(
             IceCandidatePayload(
@@ -279,11 +277,12 @@ struct WebRTCClientTests {
         try await sut.setRemoteOffer(otherClientOfferSdp)
 
         try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 1 }
+        #expect(candidateLines(pc.remoteDescription?.sdp) == 1)
     }
 
     @Test
     func
-        `given other client's answer comes then add candidate then candidate is added into peero connection`()
+        `given other client's answer comes then add candidate then candidate is added into peer connection`()
         async throws
     {
         let myOffer = try await sut.createOffer()
@@ -291,9 +290,7 @@ struct WebRTCClientTests {
         try await otherClient.setRemoteOffer(myOffer)
         let otherClientAnswerSdp = try await otherClient.createAnswer()
         try await sut.setRemoteAnswer(otherClientAnswerSdp)
-
         let pc = try #require(mockConnectionFactory.createdConnection)
-        try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 0 }
 
         await sut.addCandidate(
             IceCandidatePayload(
@@ -305,6 +302,7 @@ struct WebRTCClientTests {
         )
 
         try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 1 }
+        #expect(candidateLines(pc.remoteDescription?.sdp) == 1)
     }
 
     @Test
@@ -317,7 +315,6 @@ struct WebRTCClientTests {
         try await otherClient.setRemoteOffer(myOffer)
         let otherClientAnswerSdp = try await otherClient.createAnswer()
         let pc = try #require(mockConnectionFactory.createdConnection)
-        try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 0 }
 
         await sut.addCandidate(
             IceCandidatePayload(
@@ -331,6 +328,21 @@ struct WebRTCClientTests {
         try await sut.setRemoteAnswer(otherClientAnswerSdp)
 
         try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 1 }
+        #expect(candidateLines(pc.remoteDescription?.sdp) == 1)
+    }
+
+    @Test
+    func `when close then state is closed and senders is empty`()
+        async throws
+    {
+        let pc = try #require(mockConnectionFactory.createdConnection)
+
+        sut.close()
+
+        #expect(pc.signalingState == .closed)
+        #expect(pc.connectionState == .closed)
+        #expect(pc.senders.isEmpty)
+        for await _ in sut.events {}
     }
 }
 

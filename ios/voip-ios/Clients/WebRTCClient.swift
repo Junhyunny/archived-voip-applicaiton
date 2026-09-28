@@ -15,12 +15,8 @@ nonisolated protocol WebRTCClient {
     func createAnswer() async throws -> String
     func setRemoteAnswer(_ sdp: String) async throws
     func addCandidate(_ candidate: IceCandidatePayload) async
+    func close()
 }
-
-let DEFAULT_FACTORY: RTCPeerConnectionFactory = {
-    RTCInitializeSSL()
-    return RTCPeerConnectionFactory()
-}()
 
 actor RemoteCandidateBuffer {
     private var hasRemoteDescription = false
@@ -44,6 +40,11 @@ actor RemoteCandidateBuffer {
 }
 
 class WebRTCClientImpl: NSObject, WebRTCClient {
+    private static let defaultFactory: RTCPeerConnectionFactory = {
+        RTCInitializeSSL()
+        return RTCPeerConnectionFactory()
+    }()
+
     private let peerConnection: RTCPeerConnection
     private let factory: RTCPeerConnectionFactory
     private let buffer: RemoteCandidateBuffer
@@ -65,26 +66,24 @@ class WebRTCClientImpl: NSObject, WebRTCClient {
         return configuration
     }
 
-    private static func rtcConstraints() -> RTCMediaConstraints {
-        return RTCMediaConstraints(
-            mandatoryConstraints: nil,
-            optionalConstraints: nil
-        )
-    }
+    private static let emptyConstraints = RTCMediaConstraints(
+        mandatoryConstraints: nil,
+        optionalConstraints: nil
+    )
 
-    init(factory: RTCPeerConnectionFactory = DEFAULT_FACTORY) {
-        self.factory = factory
+    init(factory: RTCPeerConnectionFactory? = nil) {
+        self.factory = factory ?? Self.defaultFactory
         var continuation: AsyncStream<WebRTCEvent>.Continuation!
-        self.events = AsyncStream { continuatinStream in
-            continuation = continuatinStream
+        self.events = AsyncStream { pccontinuationStream in
+            continuation = pccontinuationStream
         }
         self.continuation = continuation
         self.buffer = RemoteCandidateBuffer()
 
         guard
-            let peerConnection = factory.peerConnection(
+            let peerConnection = self.factory.peerConnection(
                 with: Self.rtcConfiguration(),
-                constraints: Self.rtcConstraints(),
+                constraints: Self.emptyConstraints,
                 delegate: nil
             )
         else {
@@ -102,13 +101,6 @@ class WebRTCClientImpl: NSObject, WebRTCClient {
         peerConnection.add(audioTrack, streamIds: ["stream0"])
     }
 
-    private var constraints: RTCMediaConstraints {
-        RTCMediaConstraints(
-            mandatoryConstraints: nil,
-            optionalConstraints: nil
-        )
-    }
-
     private func drainBufferedCandidates() async {
         for candidate in await buffer.markRemoteSetAndDrain() {
             do {
@@ -120,7 +112,7 @@ class WebRTCClientImpl: NSObject, WebRTCClient {
     }
 
     func createOffer() async throws -> String {
-        let offer = try await peerConnection.offer(for: constraints)
+        let offer = try await peerConnection.offer(for: Self.emptyConstraints)
         try await peerConnection.setLocalDescription(offer)
         return offer.sdp
     }
@@ -133,7 +125,7 @@ class WebRTCClientImpl: NSObject, WebRTCClient {
     }
 
     func createAnswer() async throws -> String {
-        let answer = try await peerConnection.answer(for: constraints)
+        let answer = try await peerConnection.answer(for: Self.emptyConstraints)
         try await peerConnection.setLocalDescription(answer)
         return answer.sdp
     }
@@ -157,5 +149,10 @@ class WebRTCClientImpl: NSObject, WebRTCClient {
         } catch {
             print("failed to add ice candidate", error)
         }
+    }
+    
+    func close() {
+        peerConnection.close()
+        continuation.finish()
     }
 }
