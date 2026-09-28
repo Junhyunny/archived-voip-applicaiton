@@ -5,13 +5,13 @@
 //  Created by 강준현 on 9/22/26.
 //
 
-enum SignalEvent {
+enum SignalEvent: Equatable {
     case connected
     case joined
     case joinFailed
     case peerJoined
-    // case offer(String)
-    // case answer(String)
-    // case iceCandidate(IceCandidate)
+    case offer(String)
+    case answer(String)
+    case iceCandidate(IceCandidatePayload)
     case peerLeft
 }

@@ -6,6 +6,7 @@
 //
 
 import FlyingFox
+import FlyingSocks
 import Foundation
 
 actor MockMessageStore {
@@ -25,27 +26,36 @@ actor MockMessageStore {
 final class MockWSMessageHandler: WSMessageHandler {
 
     let store: MockMessageStore
+    let asyncSrteam: AsyncStream<WSMessage>
+    let continuation: AsyncStream<WSMessage>.Continuation
 
     init(store: MockMessageStore) {
         self.store = store
+        var continuation: AsyncStream<WSMessage>.Continuation!
+        asyncSrteam = AsyncStream { streamContinuation in
+            continuation = streamContinuation
+        }
+        self.continuation = continuation
+    }
+
+    func push(_ message: WSMessage) {
+        self.continuation.yield(message)
     }
 
     func makeMessages(
         for client: AsyncStream<WSMessage>
     ) async throws -> AsyncStream<WSMessage> {
-        return AsyncStream { continuation in
-            Task {
-                for await message in client {
-                    if case .text(let text) = message {
-                        await store.append(text)
-                    }
-                    let stub = await store.response
-
-                    continuation.yield(stub)
+        Task { [store, continuation] in
+            for await message in client {
+                if case .text(let text) = message {
+                    await store.append(text)
                 }
-                continuation.finish()
+                let stub = await store.response
+                continuation.yield(stub)
             }
+            continuation.finish()
         }
+        return asyncSrteam
     }
 }
 
@@ -54,8 +64,7 @@ func withMockServer(
     route: (HTTPRoute, WSMessageHandler),
     _ body: (_ port: UInt16) async throws -> Void
 ) async throws {
-    let port = UInt16.random(in: 10_000...60_000)
-    let server = HTTPServer(port: port)
+    let server = HTTPServer(port: 0)
     await server.appendRoute(
         route.0,
         to: .webSocket(route.1)
@@ -71,6 +80,18 @@ func withMockServer(
         }
     }
     try await server.waitUntilListening()
+    guard let address = await server.listeningAddress else {
+        throw MockServerError.notFoundAddress
+    }
+    var port: UInt16 = 0
+    switch address {
+    case .ip4(_, let portNumber):
+        port = portNumber
+    case .ip6(_, let portNumber):
+        port = portNumber
+    case .unix:
+        throw MockServerError.notFoundPort
+    }
     try await body(port)
 }
 
@@ -85,4 +106,9 @@ func parseMessage(messages: [String]) throws -> [[String: Any?]] {
         result.append(map)
     }
     return result
+}
+
+enum MockServerError: Error {
+    case notFoundAddress
+    case notFoundPort
 }

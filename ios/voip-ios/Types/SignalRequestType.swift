@@ -7,4 +7,7 @@
 
 enum SignalRequestType: String, Codable {
     case join = "join"
+    case offer = "offer"
+    case answer = "answer"
+    case iceCandidate = "ice_candidate"
 }

@@ -43,4 +43,16 @@ class MockSignalClient: SignalClient {
             throw error
         }
     }
+
+    func send(offer: String) async throws {
+
+    }
+
+    func send(answer: String) async throws {
+
+    }
+
+    func send(candidate: IceCandidatePayload) async throws {
+
+    }
 }

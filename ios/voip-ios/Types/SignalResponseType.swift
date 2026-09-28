@@ -9,4 +9,8 @@ enum SignalResponseType: String, Codable {
     case joined = "joined"
     case joinFailed = "join_failed"
     case peerJoined = "peer_joined"
+    case peerLeft = "peer_left"
+    case offer = "offer"
+    case answer = "answer"
+    case iceCandidate = "ice_candidate"
 }

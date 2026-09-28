@@ -12,12 +12,15 @@ protocol SignalClient {
 
     func connect() async throws
     func join(roomCode: String) async throws
+    func send(offer: String) async throws
+    func send(answer: String) async throws
+    func send(candidate: IceCandidatePayload) async throws
 }
 
 final class SignalClientImpl: SignalClient {
 
     private let url: URL
-    private var task: URLSessionWebSocketTask?
+    private var webSocketTask: URLSessionWebSocketTask?
     private var continuation: AsyncStream<SignalEvent>.Continuation
 
     var events: AsyncStream<SignalEvent>
@@ -52,6 +55,25 @@ final class SignalClientImpl: SignalClient {
             self.continuation.yield(.joinFailed)
         case .peerJoined:
             self.continuation.yield(.peerJoined)
+        case .peerLeft:
+            self.continuation.yield(.peerLeft)
+        case .offer:
+            guard case .sessionDescription(let payload) = response.payload
+            else {
+                return
+            }
+            self.continuation.yield(.offer(payload.sdp))
+        case .answer:
+            guard case .sessionDescription(let payload) = response.payload
+            else {
+                return
+            }
+            self.continuation.yield(.answer(payload.sdp))
+        case .iceCandidate:
+            guard case .iceCandidate(let payload) = response.payload else {
+                return
+            }
+            self.continuation.yield(.iceCandidate(payload))
         }
     }
 
@@ -99,12 +121,12 @@ final class SignalClientImpl: SignalClient {
         task.resume()
         try await sendPing(task)
         self.receive(task)
-        self.task = task
+        self.webSocketTask = task
         self.continuation.yield(.connected)
     }
 
     func join(roomCode: String) async throws {
-        guard let task = self.task else {
+        guard let task = self.webSocketTask else {
             throw SignalError.taskNotCreated
         }
         let message = SignalRequest(
@@ -114,5 +136,39 @@ final class SignalClientImpl: SignalClient {
         let data = try JSONEncoder().encode(message)
         let string = String(decoding: data, as: UTF8.self)
         try await task.send(.string(string))
+    }
+
+    private func send<Payload: Encodable>(
+        type: SignalRequestType,
+        payload: Payload
+    ) async throws {
+        guard let task = self.webSocketTask else {
+            throw SignalError.taskNotCreated
+        }
+        let message = SignalRequest(
+            type: type,
+            payload: payload
+        )
+        let data = try JSONEncoder().encode(message)
+        let string = String(decoding: data, as: UTF8.self)
+        try await task.send(.string(string))
+    }
+
+    func send(offer: String) async throws {
+        try await send(
+            type: .offer,
+            payload: SessionDescriptionPayload(sdp: offer)
+        )
+    }
+
+    func send(answer: String) async throws {
+        try await send(
+            type: .answer,
+            payload: SessionDescriptionPayload(sdp: answer)
+        )
+    }
+
+    func send(candidate: IceCandidatePayload) async throws {
+        try await send(type: .iceCandidate, payload: candidate)
     }
 }

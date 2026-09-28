@@ -42,6 +42,12 @@ class CallingViewModel {
                     callStatus = .peerJoined
                 case .peerLeft:
                     callStatus = .disconnected
+                case .offer:
+                    print("todo")
+                case .answer:
+                    print("todo")
+                case .iceCandidate:
+                    print("todo")
                 }
             }
         }
