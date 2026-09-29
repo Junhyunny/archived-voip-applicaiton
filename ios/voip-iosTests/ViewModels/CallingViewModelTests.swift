@@ -686,7 +686,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor { sut.callStatus == .negotiating }
 
-        sut.close()
+        await sut.close()
 
         try await waitFor {
             mockSignalClient.leaveCallTimes == 1
@@ -702,7 +702,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor { sut.callStatus == .negotiating }
 
-        sut.close()
+        await sut.close()
 
         #expect(mockAudioSessionManager.deactivateCalledTimes == 1)
         #expect(mockSignalClient.closeCalledTimes == 1)
@@ -714,10 +714,10 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.joined)
         try await waitFor { sut.callStatus == .joined }
 
-        sut.close()
-        mockSignalClient.continuation.yield(.peerJoined)
-
+        await sut.close()
+        
         try? await Task.sleep(for: .milliseconds(100))
+        mockSignalClient.continuation.yield(.peerJoined)
         #expect(sut.callStatus == .joined)
     }
 
@@ -726,13 +726,12 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor { sut.callStatus == .negotiating }
 
-        sut.close()
+        await sut.close()
 
+        try? await Task.sleep(for: .milliseconds(100))
         mockWebRTCClient.continuation.yield(
             .connected
         )
-
-        try? await Task.sleep(for: .milliseconds(100))
         #expect(sut.callStatus == .negotiating)
     }
 }

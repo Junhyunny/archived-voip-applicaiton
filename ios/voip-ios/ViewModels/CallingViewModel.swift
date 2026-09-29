@@ -17,6 +17,7 @@ class CallingViewModel {
     private var pendingIceCandidates: [IceCandidatePayload] = []
     private var signalTask: Task<Void, Never>?
     private var webRTCTask: Task<Void, Never>?
+    private var isClosed = false
 
     init(
         signalClient: SignalClient,
@@ -42,19 +43,22 @@ class CallingViewModel {
         observeSignalEvents()
     }
 
-    func close() {
-        Task {
-            try? await signalClient.leave()
-            signalClient.close()
-        }
-        audioSessionManager.deactivate()
-        webRTCClient?.close()
-        webRTCClient = nil
-        pendingIceCandidates.removeAll()
+    func close() async {
+        guard !isClosed else { return }
+        isClosed = true
+
         signalTask?.cancel()
         signalTask = nil
         webRTCTask?.cancel()
         webRTCTask = nil
+
+        try? await signalClient.leave()
+        signalClient.close()
+
+        webRTCClient?.close()
+        webRTCClient = nil
+        pendingIceCandidates.removeAll()
+        audioSessionManager.deactivate()
     }
 
     private func prepareWebRTC() -> WebRTCClient {
@@ -163,7 +167,6 @@ class CallingViewModel {
                 case .peerLeft:
                     callStatus = .disconnected
                 case .peerJoined:
-                    callStatus = .peerJoined
                     await startNegotiating()
                 case .offer(let payload):
                     await acceptOffer(offerSdp: payload)
