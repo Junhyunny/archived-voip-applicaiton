@@ -75,7 +75,7 @@ struct CallingViewModelTests {
         }
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
         mockSignalClient.continuation.yield(.peerLeft)
         try await waitFor(timeout: Duration.seconds(5)) {
@@ -118,7 +118,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.peerJoined)
 
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
         #expect(mockWebRTCClient.createOfferCallTimes == 1)
@@ -128,7 +128,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given negociating in creating offer when create offer throws error then call status is disconnected`()
+        `given negotiating in creating offer when create offer throws error then call status is disconnected`()
         async throws
     {
         mockWebRTCClient.createOfferError = .sample
@@ -146,7 +146,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given negociating in creating offer when send offer throws error then call status is disconnected`()
+        `given negotiating in creating offer when send offer throws error then call status is disconnected`()
         async throws
     {
         mockSignalClient.sendOfferError = .sample
@@ -175,7 +175,7 @@ struct CallingViewModelTests {
         )
 
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
         #expect(mockWebRTCClient.acceptOfferCalled == 1)
@@ -189,7 +189,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given negociating in accepting offer when acceptOffer throws error then call status is disconnected`()
+        `given negotiating in accepting offer when acceptOffer throws error then call status is disconnected`()
         async throws
     {
         mockWebRTCClient.acceptOfferError = .sample
@@ -212,7 +212,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given negociating in accepting offer when sendAnswer throws error then call status is disconnected`()
+        `given negotiating in accepting offer when sendAnswer throws error then call status is disconnected`()
         async throws
     {
         mockWebRTCClient.acceptOfferReturn = "session document payload"
@@ -246,7 +246,7 @@ struct CallingViewModelTests {
             .peerJoined
         )
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockSignalClient.continuation.yield(
@@ -281,7 +281,7 @@ struct CallingViewModelTests {
             .peerJoined
         )
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockSignalClient.continuation.yield(
@@ -312,7 +312,7 @@ struct CallingViewModelTests {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockSignalClient.continuation.yield(
@@ -351,7 +351,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.offer("session document payload"))
         mockWebRTCClient.addCandidateError = .sample
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockSignalClient.continuation.yield(
@@ -390,7 +390,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.offer("session document payload"))
 
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
         try await waitFor(timeout: Duration.seconds(5)) {
             mockWebRTCClient.addCandidateCalled == 1
@@ -429,7 +429,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.offer("session document payload"))
 
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
         try await waitFor(timeout: Duration.seconds(5)) {
             mockWebRTCClient.acceptOfferCalled == 2
@@ -450,13 +450,13 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given starting nagociationg when iceCandidate event is received from WebRTC then send candidates to other peer`()
+        `given starting negotiating when iceCandidate event is received from WebRTC then send candidates to other peer`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockWebRTCClient.continuation.yield(
@@ -486,14 +486,14 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given starting nagociationg when sendIceCandidate throws error then call status is disconnected`()
+        `given starting negotiating when sendIceCandidate throws error then call status is disconnected`()
         async throws
     {
         mockSignalClient.sendCandidateError = .sample
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockWebRTCClient.continuation.yield(
@@ -530,7 +530,7 @@ struct CallingViewModelTests {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockWebRTCClient.continuation.yield(
@@ -567,7 +567,7 @@ struct CallingViewModelTests {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockWebRTCClient.continuation.yield(
@@ -598,13 +598,13 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given starting nagociationg when connected event is received from WebRTC then call status is connected`()
+        `given starting negotiating when connected event is received from WebRTC then call status is connected`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockWebRTCClient.continuation.yield(
@@ -624,7 +624,7 @@ struct CallingViewModelTests {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
         try await waitFor(timeout: Duration.seconds(5)) {
-            sut.callStatus == .negociating
+            sut.callStatus == .negotiating
         }
 
         mockWebRTCClient.continuation.yield(
@@ -638,14 +638,14 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given starting nagociationg when disconnected or failed event is received from WebRTC then call status is connected`()
+        `given starting negotiating when disconnected or failed event is received from WebRTC then call status is disconnected`()
         async throws
     {
         for tc in [WebRTCEvent.disconnected, WebRTCEvent.failed] {
             await sut.startCall(roomCode: "1234")
             mockSignalClient.continuation.yield(.peerJoined)
             try await waitFor(timeout: Duration.seconds(5)) {
-                sut.callStatus == .negociating
+                sut.callStatus == .negotiating
             }
 
             mockWebRTCClient.continuation.yield(tc)
@@ -658,7 +658,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given accepting offer when disconnected or failed event is received from WebRTC then call status is connected`()
+        `given accepting offer when disconnected or failed event is received from WebRTC then call status is disconnected`()
         async throws
     {
         for tc in [WebRTCEvent.disconnected, WebRTCEvent.failed] {
@@ -667,7 +667,7 @@ struct CallingViewModelTests {
                 .offer("session document payload")
             )
             try await waitFor(timeout: Duration.seconds(5)) {
-                sut.callStatus == .negociating
+                sut.callStatus == .negotiating
             }
 
             mockWebRTCClient.continuation.yield(tc)
@@ -684,7 +684,7 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
-        try await waitFor { sut.callStatus == .negociating }
+        try await waitFor { sut.callStatus == .negotiating }
 
         sut.close()
 
@@ -708,7 +708,7 @@ struct CallingViewModelTests {
     @Test func `when close then webRTC events are ignored`() async throws {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
-        try await waitFor { sut.callStatus == .negociating }
+        try await waitFor { sut.callStatus == .negotiating }
 
         sut.close()
 
@@ -717,6 +717,6 @@ struct CallingViewModelTests {
         )
 
         try? await Task.sleep(for: .milliseconds(100))
-        #expect(sut.callStatus == .negociating)
+        #expect(sut.callStatus == .negotiating)
     }
 }

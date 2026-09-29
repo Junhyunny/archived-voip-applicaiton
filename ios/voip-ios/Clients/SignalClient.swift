@@ -111,7 +111,7 @@ final class SignalClientImpl: SignalClient {
             case .success(let message):
                 self?.handleMessage(message)
             case .failure(let error):
-                print("websocket messege receive error \(error)")
+                print("websocket message receive error \(error)")
             }
             self?.receive(task)
         }

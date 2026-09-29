@@ -73,8 +73,8 @@ nonisolated class WebRTCClientImpl: NSObject, WebRTCClient {
     init(factory: RTCPeerConnectionFactory? = nil) {
         self.factory = factory ?? Self.defaultFactory
         var continuation: AsyncStream<WebRTCEvent>.Continuation!
-        self.events = AsyncStream { pccontinuationStream in
-            continuation = pccontinuationStream
+        self.events = AsyncStream { streamContinuation in
+            continuation = streamContinuation
         }
         self.continuation = continuation
         self.buffer = RemoteCandidateBuffer()

@@ -101,9 +101,9 @@ class CallingViewModel {
         }
     }
 
-    private func startNegociating() async {
+    private func startNegotiating() async {
         let client = prepareWebRTC()
-        callStatus = .negociating
+        callStatus = .negotiating
         do {
             let sdp = try await client.createOffer()
             try await signalClient.send(offer: sdp)
@@ -114,7 +114,7 @@ class CallingViewModel {
 
     private func acceptOffer(offerSdp: String) async {
         let client = prepareWebRTC()
-        callStatus = .negociating
+        callStatus = .negotiating
         do {
             let sdp = try await client.acceptOffer(offerSdp)
             try await signalClient.send(answer: sdp)
@@ -161,7 +161,7 @@ class CallingViewModel {
                     callStatus = .disconnected
                 case .peerJoined:
                     callStatus = .peerJoined
-                    await startNegociating()
+                    await startNegotiating()
                 case .offer(let payload):
                     await acceptOffer(offerSdp: payload)
                 case .answer(let payload):

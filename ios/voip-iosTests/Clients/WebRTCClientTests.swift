@@ -13,7 +13,7 @@ import WebRTC
 class MockRTCPeerConnectionFactory: RTCPeerConnectionFactory {
     var peerConnection_called_times: Int = 0
     var peerConnection_configuration: RTCConfiguration?
-    var peerConnection_contstraints: RTCMediaConstraints?
+    var peerConnection_constraints: RTCMediaConstraints?
     var peerConnection_delegate: RTCPeerConnectionDelegate?
     var createdConnection: RTCPeerConnection!
 
@@ -24,7 +24,7 @@ class MockRTCPeerConnectionFactory: RTCPeerConnectionFactory {
     ) -> RTCPeerConnection? {
         peerConnection_called_times += 1
         peerConnection_configuration = configuration
-        peerConnection_contstraints = constraints
+        peerConnection_constraints = constraints
         peerConnection_delegate = delegate
         createdConnection = super.peerConnection(
             with: configuration,
@@ -65,7 +65,7 @@ struct WebRTCClientTests {
         #expect(configuration?.continualGatheringPolicy == .gatherContinually)
 
         let mediaConstraints = mockConnectionFactory
-            .peerConnection_contstraints
+            .peerConnection_constraints
         #expect(mediaConstraints != nil)
 
         let delegate = mockConnectionFactory.peerConnection_delegate
