@@ -5,4 +5,4 @@
 //  Created by 강준현 on 9/29/26.
 //
 
-struct EmptyPayload: Decodable, Equatable {}
+struct EmptyPayload: Codable, Equatable {}

@@ -679,6 +679,22 @@ struct CallingViewModelTests {
     }
 
     @Test
+    func `when close then send leave message to server`()
+        async throws
+    {
+        await sut.startCall(roomCode: "1234")
+        mockSignalClient.continuation.yield(.peerJoined)
+        try await waitFor { sut.callStatus == .negotiating }
+
+        sut.close()
+
+        try await waitFor {
+            mockSignalClient.leaveCallTimes == 1
+        }
+        #expect(mockSignalClient.leaveCallTimes == 1)
+    }
+
+    @Test
     func `when close then audio session and peer connection are torn down`()
         async throws
     {

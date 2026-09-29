@@ -59,6 +59,8 @@ final class FakeRemotePeer: NSObject, RTCPeerConnectionDelegate {
             await acceptOffer(sdp)
         case "ice_candidate":
             addCandidate(payload)
+        case "leave":
+            send(frame("peer_left"))
         default:
             break
         }

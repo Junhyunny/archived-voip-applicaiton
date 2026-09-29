@@ -10,4 +10,5 @@ enum SignalRequestType: String, Codable {
     case offer = "offer"
     case answer = "answer"
     case iceCandidate = "ice_candidate"
+    case leave = "leave"
 }

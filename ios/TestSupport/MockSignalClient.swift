@@ -8,7 +8,6 @@
 @testable import voip_ios
 
 class MockSignalClient: SignalClient {
-
     let events: AsyncStream<voip_ios.SignalEvent>
     private(set) var continuation: AsyncStream<SignalEvent>.Continuation
 
@@ -82,5 +81,11 @@ class MockSignalClient: SignalClient {
         if let error = sendCandidateError {
             throw error
         }
+    }
+
+    private(set) var leaveCallTimes: Int = 0
+
+    func leave() async throws {
+        leaveCallTimes += 1
     }
 }

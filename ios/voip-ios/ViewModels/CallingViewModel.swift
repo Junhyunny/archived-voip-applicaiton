@@ -43,8 +43,11 @@ class CallingViewModel {
     }
 
     func close() {
+        Task {
+            try? await signalClient.leave()
+            signalClient.close()
+        }
         audioSessionManager.deactivate()
-        signalClient.close()
         webRTCClient?.close()
         webRTCClient = nil
         pendingIceCandidates.removeAll()

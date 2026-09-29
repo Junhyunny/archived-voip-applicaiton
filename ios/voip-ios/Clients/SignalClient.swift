@@ -16,10 +16,10 @@ protocol SignalClient {
     func send(offer: String) async throws
     func send(answer: String) async throws
     func send(candidate: IceCandidatePayload) async throws
+    func leave() async throws
 }
 
 final class SignalClientImpl: SignalClient {
-
     private let url: URL
     private var webSocketTask: URLSessionWebSocketTask?
     private var continuation: AsyncStream<SignalEvent>.Continuation
@@ -177,5 +177,9 @@ final class SignalClientImpl: SignalClient {
 
     func send(candidate: IceCandidatePayload) async throws {
         try await send(type: .iceCandidate, payload: candidate)
+    }
+
+    func leave() async throws {
+        try await send(type: .leave, payload: EmptyPayload())
     }
 }

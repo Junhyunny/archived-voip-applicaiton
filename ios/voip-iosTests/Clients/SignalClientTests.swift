@@ -487,4 +487,33 @@ struct SignalClientTests {
             }
         }
     }
+
+    @Test func `when leave then send leave message`() async throws {
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(store: mockStore)
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            let sut = SignalClientImpl(
+                url: URL(string: "ws://localhost:\(port)/signaling")!
+            )
+            try await sut.connect()
+
+            try await sut.leave()
+
+            try await waitFor {
+                await mockStore.messages.count >= 1
+            }
+            #expect(await mockStore.messages.count == 1)
+            let parsedMessage = try parseMessage(
+                messages: await mockStore.messages
+            )
+            let message = parsedMessage.first!
+            #expect(message["type"] as? String == "leave")
+        }
+    }
 }
