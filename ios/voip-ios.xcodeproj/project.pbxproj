@@ -50,6 +50,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A62F616D306BAADC005E1B3B /* Exceptions for "voip-ios" folder in "voip-ios" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A6D23769305BBE5300A12732 /* voip-ios */;
+		};
 		A6ADC9F73064DFD400D800F6 /* Exceptions for "TestSupport" folder in "voip-ios" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -99,6 +106,9 @@
 		};
 		A6D2376C305BBE5300A12732 /* voip-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A62F616D306BAADC005E1B3B /* Exceptions for "voip-ios" folder in "voip-ios" target */,
+			);
 			path = "voip-ios";
 			sourceTree = "<group>";
 		};
@@ -626,6 +636,8 @@
 				DEVELOPMENT_TEAM = Z6H5892327;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "voip-ios/Info.plist";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "앱에서 음성 인식을 사용하기 위해 마이크 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -659,6 +671,8 @@
 				DEVELOPMENT_TEAM = Z6H5892327;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "voip-ios/Info.plist";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "앱에서 음성 인식을 사용하기 위해 마이크 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
