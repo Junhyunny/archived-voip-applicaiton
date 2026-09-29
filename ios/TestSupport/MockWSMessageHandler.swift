@@ -28,14 +28,31 @@ final class MockWSMessageHandler: WSMessageHandler {
     let store: MockMessageStore
     let outboundStream: AsyncStream<WSMessage>
     let continuation: AsyncStream<WSMessage>.Continuation
+    let onClientMessage: (@Sendable (String) async -> Void)?
 
-    init(store: MockMessageStore) {
+    init(
+        store: MockMessageStore,
+        outboundStream: AsyncStream<WSMessage>,
+        continuation: AsyncStream<WSMessage>.Continuation,
+        onClientMessage: (@Sendable (String) async -> Void)? = nil
+    ) {
         self.store = store
-        var continuation: AsyncStream<WSMessage>.Continuation!
-        outboundStream = AsyncStream { streamContinuation in
-            continuation = streamContinuation
-        }
+        self.outboundStream = outboundStream
         self.continuation = continuation
+        self.onClientMessage = onClientMessage
+    }
+
+    convenience init(
+        store: MockMessageStore
+    ) {
+        var c: AsyncStream<WSMessage>.Continuation!
+        let stream = AsyncStream<WSMessage> { c = $0 }
+        self.init(
+            store: store,
+            outboundStream: stream,
+            continuation: c!,
+            onClientMessage: nil
+        )
     }
 
     func push(_ message: WSMessage) {
@@ -49,6 +66,7 @@ final class MockWSMessageHandler: WSMessageHandler {
             for await message in client {
                 if case .text(let text) = message {
                     await store.append(text)
+                    await onClientMessage?(text)
                 }
                 let stub = await store.response
                 continuation.yield(stub)

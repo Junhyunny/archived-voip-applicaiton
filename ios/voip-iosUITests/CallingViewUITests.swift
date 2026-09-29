@@ -11,49 +11,19 @@ import XCTest
 final class CallingViewUITests: XCTestCase {
     private var app: XCUIApplication!
 
-    var mockMessageStore: MockMessageStore!
-    var mockServer: HTTPServer!
     override func setUp() async throws {
         continueAfterFailure = false
-        mockMessageStore = MockMessageStore()
-        mockServer = await setupWebSocket(
-            routes: [
-                (
-                    "GET /signaling",
-                    MockWSMessageHandler(store: mockMessageStore)
-                )
-            ]
-        )
     }
 
-    override func tearDown() async throws {
-        await mockServer.stop(timeout: 2)
-    }
-
-    private func setupWebSocket(routes: [(HTTPRoute, WSMessageHandler)]) async
-        -> HTTPServer
-    {
-        let server = HTTPServer(port: 8080)
-        for route in routes {
-            await server.appendRoute(
-                route.0,
-                to: .webSocket(route.1)
-            )
-        }
-        _ = Task {
-            do {
-                try await server.run()
-            } catch {
-                print("server error:", error)
-            }
-        }
-        try? await server.waitUntilListening()
-        return server
-    }
-
-    private func navigateToCallingView(timeLimit: Int = 60) {
+    private func navigateToCallingView(
+        timeLimit: Int = 60,
+        port: UInt16 = 8080
+    ) {
         app = XCUIApplication()
         app.launchEnvironment["CALL_TIME_LIMIT_SECONDS"] = String(timeLimit)
+        app.launchEnvironment["SIGNALING_URL"] = String(
+            "ws://localhost:\(port)/signaling"
+        )
         app.launch()
         let keypad = app.otherElements["numbers_keypad"]
         keypad.buttons["keypad_1"].tap()
@@ -68,67 +38,268 @@ final class CallingViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_render_then_see_connecting_information() {
-        navigateToCallingView()
+    func test_when_render_then_see_connecting_information() async throws {
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(store: mockStore)
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(port: port)
 
-        XCTAssertTrue(app.staticTexts["연결 중"].exists)
-        XCTAssertTrue(app.staticTexts["1234"].exists)
-        XCTAssertTrue(app.staticTexts["상대방을 기다리고 있어요"].exists)
-        XCTAssertTrue(
-            app.staticTexts
-                .matching(NSPredicate(format: "label CONTAINS %@", "초 후 자동 종료"))
-                .firstMatch
-                .exists
-        )
-        XCTAssertTrue(
-            app.staticTexts["같은 코드 1234 를 다른 기기에서 입력하면 바로 통화가 시작됩니다"].exists
-        )
+            XCTAssertTrue(app.staticTexts["연결 중"].exists)
+            XCTAssertTrue(app.staticTexts["1234"].exists)
+            XCTAssertTrue(app.staticTexts["상대방을 기다리고 있어요"].exists)
+            XCTAssertEqual(
+                app.images["checkbox_signaling_server"].value
+                    as? String,
+                "unchecked"
+            )
+            XCTAssertTrue(app.staticTexts["시그널링 서버 연결"].exists)
+            XCTAssertEqual(
+                app.images["checkbox_peer_joined"].value as? String,
+                "unchecked"
+            )
+            XCTAssertTrue(app.staticTexts["상대방 입장"].exists)
+            XCTAssertTrue(
+                app.staticTexts
+                    .matching(
+                        NSPredicate(format: "label CONTAINS %@", "초 후 자동 종료")
+                    )
+                    .firstMatch
+                    .exists
+            )
+            XCTAssertTrue(
+                app.staticTexts["같은 코드 1234 를 다른 기기에서 입력하면 바로 통화가 시작됩니다"].exists
+            )
+            XCTAssertTrue(app.buttons["취소"].exists)
+        }
     }
 
     @MainActor
-    func test_when_tap_cancel_button_then_navigate_enter_room_view() {
-        navigateToCallingView()
-        app.buttons["cancel_button"].tap()
+    func test_when_tap_cancel_button_then_navigate_enter_room_view()
+        async throws
+    {
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(store: mockStore)
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(port: port)
+            app.buttons["cancel_button"].tap()
 
-        let enterRoomView = app.otherElements["enter_room_view"]
-        let callingView = app.otherElements["calling_view"]
-        XCTAssertTrue(enterRoomView.waitForExistence(timeout: 2))
-        XCTAssertFalse(callingView.exists)
+            let enterRoomView = app.otherElements["enter_room_view"]
+            let callingView = app.otherElements["calling_view"]
+            XCTAssertTrue(enterRoomView.waitForExistence(timeout: 2))
+            XCTAssertFalse(callingView.exists)
+        }
     }
 
     @MainActor
     func
         test_given_2s_are_left_when_2s_are_passed_then_navigate_enter_room_view()
+        async throws
     {
-        navigateToCallingView(timeLimit: 2)
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(store: mockStore)
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(timeLimit: 2, port: port)
 
-        let enterRoomView = app.otherElements["enter_room_view"]
-        let callingView = app.otherElements["calling_view"]
-        XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
-        XCTAssertFalse(callingView.exists)
+            let enterRoomView = app.otherElements["enter_room_view"]
+            let callingView = app.otherElements["calling_view"]
+            XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
+            XCTAssertFalse(callingView.exists)
+        }
     }
 
     @MainActor
     func test_when_render_then_send_join_request_to_signaling_sever()
         async throws
     {
-        navigateToCallingView()
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(store: mockStore)
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(port: port)
 
-        try await waitFor(timeout: .seconds(5)) {
-            await self.mockMessageStore.messages.count == 1
-        }
-        let messages = await mockMessageStore.messages
-        XCTAssertEqual(messages.count, 1)
+            try await waitFor(timeout: .seconds(5)) {
+                await mockStore.messages.count == 1
+            }
+            let messages = await mockStore.messages
+            XCTAssertEqual(messages.count, 1)
 
-        let data = Data(messages[0].utf8)
-        let json = try JSONSerialization.jsonObject(with: data)
-        guard let map = json as? [String: Any] else {
-            XCTFail("Expected JSON object")
-            return
+            let data = Data(messages[0].utf8)
+            let json = try JSONSerialization.jsonObject(with: data)
+            guard let map = json as? [String: Any] else {
+                XCTFail("Expected JSON object")
+                return
+            }
+            XCTAssertEqual(map.count, 2)
+            XCTAssertEqual(map["type"] as? String, "join")
+            let payload: [String: Any?]? = map["payload"] as? [String: Any?]
+            XCTAssertEqual(payload?["roomCode"] as? String, "1234")
         }
-        XCTAssertEqual(map.count, 2)
-        XCTAssertEqual(map["type"] as? String, "join")
-        let payload: [String: Any?]? = map["payload"] as? [String: Any?]
-        XCTAssertEqual(payload?["roomCode"] as? String, "1234")
+    }
+
+    @MainActor
+    func test_when_peer_joined_then_info_text_is_changed() async throws {
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(store: mockStore)
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(port: port)
+            try await waitFor(timeout: .seconds(5)) {
+                await mockStore.messages.count == 1
+            }
+
+            mockHandler.push(
+                WSMessage.text(
+                    """
+                    {
+                        "type": "peer_joined"
+                    }
+                    """
+                )
+            )
+
+            XCTAssertTrue(
+                app.staticTexts["상대방이 입장했어요"].waitForExistence(timeout: 10)
+            )
+            XCTAssertTrue(app.staticTexts["음성을 연결하고 있어요"].exists)
+            XCTAssertTrue(app.staticTexts["잠시 후 통화 화면으로 이동합니다"].exists)
+            XCTAssertEqual(
+                app.images["checkbox_signaling_server"].value
+                    as? String,
+                "checked"
+            )
+            XCTAssertTrue(app.staticTexts["시그널링 서버 연결"].exists)
+            XCTAssertEqual(
+                app.images["checkbox_peer_joined"].value as? String,
+                "checked"
+            )
+            XCTAssertTrue(app.staticTexts["상대방 입장"].exists)
+            XCTAssertTrue(
+                app.staticTexts
+                    .matching(
+                        NSPredicate(format: "label CONTAINS %@", "초 후 자동 종료")
+                    )
+                    .firstMatch
+                    .exists
+            )
+            XCTAssertFalse(app.staticTexts["상대방을 기다리고 있어요"].exists)
+            XCTAssertFalse(
+                app.staticTexts["같은 코드 1234 를 다른 기기에서 입력하면 바로 통화가 시작됩니다"].exists
+            )
+        }
+    }
+
+    @MainActor
+    func test_when_webRTC_is_connected_then_info_text_is_changed() async throws
+    {
+        var c: AsyncStream<WSMessage>.Continuation!
+        let stream = AsyncStream<WSMessage> { c = $0 }
+        let continuation = c!
+        let peer = FakeRemotePeer(send: { json in
+            continuation.yield(.text(json))
+        })
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(
+            store: mockStore,
+            outboundStream: stream,
+            continuation: continuation,
+            onClientMessage: { text in await peer.handle(text) }
+        )
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(port: port)
+            try await waitFor(timeout: .seconds(5)) {
+                await mockStore.messages.count >= 1
+            }
+
+            XCTAssertTrue(
+                app.staticTexts["연결됨 · P2P"].waitForExistence(timeout: 10)
+            )
+            XCTAssertTrue(app.staticTexts["1234"].exists)
+            XCTAssertTrue(app.staticTexts["방 코드 1234 로 통화 중"].exists)
+            XCTAssertTrue(app.staticTexts["AI가 통화를 듣고 있어요"].exists)
+            XCTAssertTrue(
+                app.staticTexts["자막은 표시하지 않습니다. 통화가 끝나면 요약이 만들어집니다."].exists
+            )
+            XCTAssertTrue(app.buttons["통화 종료"].exists)
+            XCTAssertTrue(app.buttons["leave_call"].exists)
+            XCTAssertFalse(app.otherElements["connecting_view"].exists)
+        }
+    }
+    
+    
+    @MainActor
+    func test_when_webRTC_is_connected_then_info_text_is_changed() async throws
+    {
+        var c: AsyncStream<WSMessage>.Continuation!
+        let stream = AsyncStream<WSMessage> { c = $0 }
+        let continuation = c!
+        let peer = FakeRemotePeer(send: { json in
+            continuation.yield(.text(json))
+        })
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(
+            store: mockStore,
+            outboundStream: stream,
+            continuation: continuation,
+            onClientMessage: { text in await peer.handle(text) }
+        )
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(port: port)
+            try await waitFor(timeout: .seconds(5)) {
+                await mockStore.messages.count >= 1
+            }
+
+            XCTAssertTrue(
+                app.staticTexts["연결됨 · P2P"].waitForExistence(timeout: 10)
+            )
+            XCTAssertTrue(app.staticTexts["1234"].exists)
+            XCTAssertTrue(app.staticTexts["방 코드 1234 로 통화 중"].exists)
+            XCTAssertTrue(app.staticTexts["AI가 통화를 듣고 있어요"].exists)
+            XCTAssertTrue(
+                app.staticTexts["자막은 표시하지 않습니다. 통화가 끝나면 요약이 만들어집니다."].exists
+            )
+            XCTAssertTrue(app.buttons["통화 종료"].exists)
+            XCTAssertTrue(app.buttons["leave_call"].exists)
+            XCTAssertFalse(app.otherElements["connecting_view"].exists)
+        }
     }
 }
