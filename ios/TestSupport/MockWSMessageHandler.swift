@@ -13,6 +13,10 @@ actor MockMessageStore {
     private(set) var messages: [String] = []
     private(set) var response: WSMessage = WSMessage.text("{}")
 
+    func clearMessages() {
+        messages.removeAll()
+    }
+    
     func append(_ message: String) {
         messages.append(message)
     }

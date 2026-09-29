@@ -31,10 +31,6 @@ final class CallingViewUITests: XCTestCase {
         keypad.buttons["keypad_3"].tap()
         keypad.buttons["keypad_4"].tap()
         app.buttons["call_button"].tap()
-        XCTAssertTrue(
-            app.otherElements["calling_view"]
-                .waitForExistence(timeout: 2)
-        )
     }
 
     @MainActor
@@ -50,6 +46,10 @@ final class CallingViewUITests: XCTestCase {
         ) { port in
             navigateToCallingView(port: port)
 
+            XCTAssertTrue(
+                app.otherElements["calling_view"]
+                    .waitForExistence(timeout: 2)
+            )
             XCTAssertTrue(app.staticTexts["연결 중"].exists)
             XCTAssertTrue(app.staticTexts["1234"].exists)
             XCTAssertTrue(app.staticTexts["상대방을 기다리고 있어요"].exists)
@@ -93,8 +93,24 @@ final class CallingViewUITests: XCTestCase {
             )
         ) { port in
             navigateToCallingView(port: port)
+            XCTAssertTrue(
+                app.otherElements["calling_view"]
+                    .waitForExistence(timeout: 2)
+            )
+            await mockStore.clearMessages()
+
             app.buttons["cancel_button"].tap()
 
+            try await waitFor(timeout: .seconds(5)) {
+                return await mockStore.messages.count >= 1
+            }
+            let parsedMessages = try parseMessage(
+                messages: await mockStore.messages
+            )
+            XCTAssertEqual(parsedMessages.count, 1)
+            let message = parsedMessages.first!
+            XCTAssertEqual(message.count, 2)
+            XCTAssertEqual(message["type"] as? String, "leave")
             let enterRoomView = app.otherElements["enter_room_view"]
             let callingView = app.otherElements["calling_view"]
             XCTAssertTrue(enterRoomView.waitForExistence(timeout: 2))
@@ -116,8 +132,23 @@ final class CallingViewUITests: XCTestCase {
                 mockHandler
             )
         ) { port in
-            navigateToCallingView(timeLimit: 2, port: port)
+            navigateToCallingView(timeLimit: 3, port: port)
+            XCTAssertTrue(
+                app.otherElements["calling_view"]
+                    .waitForExistence(timeout: 2)
+            )
+            await mockStore.clearMessages()
 
+            try await waitFor(timeout: .seconds(5)) {
+                return await mockStore.messages.count >= 1
+            }
+            let parsedMessages = try parseMessage(
+                messages: await mockStore.messages
+            )
+            XCTAssertEqual(parsedMessages.count, 1)
+            let message = parsedMessages.first!
+            XCTAssertEqual(message.count, 2)
+            XCTAssertEqual(message["type"] as? String, "leave")
             let enterRoomView = app.otherElements["enter_room_view"]
             let callingView = app.otherElements["calling_view"]
             XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
@@ -143,18 +174,14 @@ final class CallingViewUITests: XCTestCase {
             try await waitFor(timeout: .seconds(5)) {
                 await mockStore.messages.count == 1
             }
-            let messages = await mockStore.messages
-            XCTAssertEqual(messages.count, 1)
-
-            let data = Data(messages[0].utf8)
-            let json = try JSONSerialization.jsonObject(with: data)
-            guard let map = json as? [String: Any] else {
-                XCTFail("Expected JSON object")
-                return
-            }
-            XCTAssertEqual(map.count, 2)
-            XCTAssertEqual(map["type"] as? String, "join")
-            let payload: [String: Any?]? = map["payload"] as? [String: Any?]
+            let parsedMessages = try parseMessage(
+                messages: await mockStore.messages
+            )
+            XCTAssertEqual(parsedMessages.count, 1)
+            let message = parsedMessages.first!
+            XCTAssertEqual(message.count, 2)
+            XCTAssertEqual(message["type"] as? String, "join")
+            let payload: [String: Any?]? = message["payload"] as? [String: Any?]
             XCTAssertEqual(payload?["roomCode"] as? String, "1234")
         }
     }
@@ -240,13 +267,13 @@ final class CallingViewUITests: XCTestCase {
             )
         ) { port in
             navigateToCallingView(port: port)
-            try await waitFor(timeout: .seconds(5)) {
-                await mockStore.messages.count >= 1
-            }
 
             XCTAssertTrue(
-                app.staticTexts["연결됨 · P2P"].waitForExistence(timeout: 10)
+                app.staticTexts["연결됨 · P2P"].waitForExistence(
+                    timeout: 10
+                )
             )
+            XCTAssertTrue(app.staticTexts["연결됨 · P2P"].exists)
             XCTAssertTrue(app.staticTexts["1234"].exists)
             XCTAssertTrue(app.staticTexts["방 코드 1234 로 통화 중"].exists)
             XCTAssertTrue(app.staticTexts["AI가 통화를 듣고 있어요"].exists)
@@ -258,10 +285,11 @@ final class CallingViewUITests: XCTestCase {
             XCTAssertFalse(app.otherElements["connecting_view"].exists)
         }
     }
-    
-    
+
     @MainActor
-    func test_when_webRTC_is_connected_then_info_text_is_changed() async throws
+    func
+        test_given_peers_are_connected_when_tap_leave_button_then_dismiss_and_send_leave_request()
+        async throws
     {
         var c: AsyncStream<WSMessage>.Continuation!
         let stream = AsyncStream<WSMessage> { c = $0 }
@@ -284,22 +312,126 @@ final class CallingViewUITests: XCTestCase {
             )
         ) { port in
             navigateToCallingView(port: port)
-            try await waitFor(timeout: .seconds(5)) {
-                await mockStore.messages.count >= 1
-            }
-
             XCTAssertTrue(
                 app.staticTexts["연결됨 · P2P"].waitForExistence(timeout: 10)
             )
-            XCTAssertTrue(app.staticTexts["1234"].exists)
-            XCTAssertTrue(app.staticTexts["방 코드 1234 로 통화 중"].exists)
-            XCTAssertTrue(app.staticTexts["AI가 통화를 듣고 있어요"].exists)
-            XCTAssertTrue(
-                app.staticTexts["자막은 표시하지 않습니다. 통화가 끝나면 요약이 만들어집니다."].exists
+            await mockStore.clearMessages()
+
+            app.buttons["leave_call"].tap()
+
+            try await waitFor(timeout: .seconds(5)) {
+                return await mockStore.messages.count >= 1
+            }
+            let parsedMessages = try parseMessage(
+                messages: await mockStore.messages
             )
-            XCTAssertTrue(app.buttons["통화 종료"].exists)
-            XCTAssertTrue(app.buttons["leave_call"].exists)
-            XCTAssertFalse(app.otherElements["connecting_view"].exists)
+            XCTAssertEqual(parsedMessages.count, 1)
+            let message = parsedMessages.first!
+            XCTAssertEqual(message.count, 2)
+            XCTAssertEqual(message["type"] as? String, "leave")
+
+            let enterRoomView = app.otherElements["enter_room_view"]
+            let callingView = app.otherElements["calling_view"]
+            XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
+            XCTAssertFalse(callingView.exists)
+        }
+    }
+
+    @MainActor
+    func
+        test_when_peers_are_connected_then_timer_is_stop_and_do_not_go_back_to_enter_room_page()
+        async throws
+    {
+        var c: AsyncStream<WSMessage>.Continuation!
+        let stream = AsyncStream<WSMessage> { c = $0 }
+        let continuation = c!
+        let peer = FakeRemotePeer(send: { json in
+            continuation.yield(.text(json))
+        })
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(
+            store: mockStore,
+            outboundStream: stream,
+            continuation: continuation,
+            onClientMessage: { text in await peer.handle(text) }
+        )
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(timeLimit: 3, port: port)
+            XCTAssertTrue(
+                app.staticTexts["연결됨 · P2P"].waitForExistence(timeout: 10)
+            )
+
+            try? await Task.sleep(for: .seconds(5))
+
+            let callingView = app.otherElements["calling_view"]
+            let enterRoomView = app.otherElements["enter_room_view"]
+            XCTAssertTrue(callingView.waitForExistence(timeout: 5))
+            XCTAssertFalse(enterRoomView.exists)
+        }
+    }
+
+    @MainActor
+    func
+        test_given_peers_are_connected_when_peer_left_event_is_received_then_dismiss_and_send_leave_request()
+        async throws
+    {
+        var c: AsyncStream<WSMessage>.Continuation!
+        let stream = AsyncStream<WSMessage> { c = $0 }
+        let continuation = c!
+        let peer = FakeRemotePeer(send: { json in
+            continuation.yield(.text(json))
+        })
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(
+            store: mockStore,
+            outboundStream: stream,
+            continuation: continuation,
+            onClientMessage: { text in await peer.handle(text) }
+        )
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            navigateToCallingView(port: port)
+            XCTAssertTrue(
+                app.staticTexts["연결됨 · P2P"].waitForExistence(timeout: 10)
+            )
+            await mockStore.clearMessages()
+
+            mockHandler.continuation.yield(
+                WSMessage.text(
+                    """
+                    {
+                        "type": "peer_left"
+                    }
+                    """
+                )
+            )
+
+            try await waitFor(timeout: .seconds(5)) {
+                return await mockStore.messages.count >= 1
+            }
+            let parsedMessages = try parseMessage(
+                messages: await mockStore.messages
+            )
+            XCTAssertEqual(parsedMessages.count, 1)
+            let message = parsedMessages.first!
+            XCTAssertEqual(message.count, 2)
+            XCTAssertEqual(message["type"] as? String, "leave")
+
+            let enterRoomView = app.otherElements["enter_room_view"]
+            let callingView = app.otherElements["calling_view"]
+            XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
+            XCTAssertFalse(callingView.exists)
         }
     }
 }
