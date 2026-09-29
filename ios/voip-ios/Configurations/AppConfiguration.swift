@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AppConfiguration {
     var timeLimitSeconds: Int = 60
-    var signalingURL: URL = URL(string: "ws://localhost:8080/signaling")!
+    var signalingURL: URL = URL(string: "ws://192.168.0.4:8080/signaling")!
 
     static func fromLaunchEnvironment() -> AppConfiguration {
         var configuration = AppConfiguration()
