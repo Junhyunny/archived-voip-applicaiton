@@ -677,4 +677,46 @@ struct CallingViewModelTests {
             }
         }
     }
+
+    @Test
+    func `when close then audio session and peer connection are torn down`()
+        async throws
+    {
+        await sut.startCall(roomCode: "1234")
+        mockSignalClient.continuation.yield(.peerJoined)
+        try await waitFor { sut.callStatus == .negociating }
+
+        sut.close()
+
+        #expect(mockAudioSessionManager.deactivateCalledTimes == 1)
+        #expect(mockSignalClient.closeCalledTimes == 1)
+        #expect(mockWebRTCClient.closeCalledTimes == 1)
+    }
+
+    @Test func `when close then signal events are ignored`() async throws {
+        await sut.startCall(roomCode: "1234")
+        mockSignalClient.continuation.yield(.joined)
+        try await waitFor { sut.callStatus == .joined }
+
+        sut.close()
+        mockSignalClient.continuation.yield(.peerJoined)
+
+        try? await Task.sleep(for: .milliseconds(100))
+        #expect(sut.callStatus == .joined)
+    }
+
+    @Test func `when close then webRTC events are ignored`() async throws {
+        await sut.startCall(roomCode: "1234")
+        mockSignalClient.continuation.yield(.peerJoined)
+        try await waitFor { sut.callStatus == .negociating }
+
+        sut.close()
+
+        mockWebRTCClient.continuation.yield(
+            .connected
+        )
+
+        try? await Task.sleep(for: .milliseconds(100))
+        #expect(sut.callStatus == .negociating)
+    }
 }

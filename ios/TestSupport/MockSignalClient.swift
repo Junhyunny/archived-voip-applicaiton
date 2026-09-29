@@ -7,8 +7,6 @@
 
 @testable import voip_ios
 
-
-
 class MockSignalClient: SignalClient {
 
     let events: AsyncStream<voip_ios.SignalEvent>
@@ -30,6 +28,12 @@ class MockSignalClient: SignalClient {
         if let error = connectError {
             throw error
         }
+    }
+
+    private(set) var closeCalledTimes: Int = 0
+
+    func close() {
+        closeCalledTimes += 1
     }
 
     private(set) var joinCalledTimes: Int = 0

@@ -69,9 +69,9 @@ class MockWebRTCClient: WebRTCClient {
         }
     }
 
-    private(set) var closeCalled: Int = 0
+    private(set) var closeCalledTimes: Int = 0
 
     func close() {
-        closeCalled += 1
+        closeCalledTimes += 1
     }
 }

@@ -15,6 +15,8 @@ class CallingViewModel {
     private var audioSessionManager: AudioSessionManager
     private var webRTCClient: WebRTCClient?
     private var pendingIceCandidates: [IceCandidatePayload] = []
+    private var signalTask: Task<Void, Never>?
+    private var webRTCTask: Task<Void, Never>?
 
     init(
         signalClient: SignalClient,
@@ -38,6 +40,18 @@ class CallingViewModel {
             return
         }
         observeSignalEvents()
+    }
+
+    func close() {
+        audioSessionManager.deactivate()
+        signalClient.close()
+        webRTCClient?.close()
+        webRTCClient = nil
+        pendingIceCandidates.removeAll()
+        signalTask?.cancel()
+        signalTask = nil
+        webRTCTask?.cancel()
+        webRTCTask = nil
     }
 
     private func prepareWebRTC() -> WebRTCClient {
@@ -64,7 +78,7 @@ class CallingViewModel {
     }
 
     private func observeWebRTCEvent(client: WebRTCClient) {
-        Task {
+        webRTCTask = Task {
             for await event in client.events {
                 switch event {
                 case .iceCandidate(let payload):
@@ -134,7 +148,7 @@ class CallingViewModel {
     }
 
     private func observeSignalEvents() {
-        Task {
+        signalTask = Task {
             for await signalEvent in signalClient.events {
                 switch signalEvent {
                 case .connected:

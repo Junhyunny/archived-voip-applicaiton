@@ -460,4 +460,31 @@ struct SignalClientTests {
             )
         }
     }
+
+    @Test func `when send after close then throws taskNotCreated`() async throws
+    {
+        let mockStore = MockMessageStore()
+        let mockHandler = MockWSMessageHandler(store: mockStore)
+        try await withMockServer(
+            store: mockStore,
+            route: (
+                "GET /signaling",
+                mockHandler
+            )
+        ) { port in
+            let sut = SignalClientImpl(
+                url: URL(string: "ws://localhost:\(port)/signaling")!
+            )
+            try await sut.connect()
+
+            sut.close()
+
+            await #expect(throws: SignalError.taskNotCreated) {
+                try await sut.join(roomCode: "1234")
+            }
+            await #expect(throws: SignalError.taskNotCreated) {
+                try await sut.send(offer: "v=0")
+            }
+        }
+    }
 }

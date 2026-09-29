@@ -11,6 +11,7 @@ protocol SignalClient {
     var events: AsyncStream<SignalEvent> { get }
 
     func connect() async throws
+    func close()
     func join(roomCode: String) async throws
     func send(offer: String) async throws
     func send(answer: String) async throws
@@ -123,6 +124,12 @@ final class SignalClientImpl: SignalClient {
         self.receive(task)
         self.webSocketTask = task
         self.continuation.yield(.connected)
+    }
+
+    func close() {
+        self.continuation.finish()
+        self.webSocketTask?.cancel()
+        self.webSocketTask = nil
     }
 
     func join(roomCode: String) async throws {
