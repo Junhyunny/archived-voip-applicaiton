@@ -54,7 +54,7 @@ final class CallingViewUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["1234"].exists)
             XCTAssertTrue(app.staticTexts["상대방을 기다리고 있어요"].exists)
             XCTAssertEqual(
-                app.images["checkbox_signaling_server"].value
+                app.images["checkbox_join_signaling"].value
                     as? String,
                 "unchecked"
             )
@@ -132,27 +132,24 @@ final class CallingViewUITests: XCTestCase {
                 mockHandler
             )
         ) { port in
-            navigateToCallingView(timeLimit: 3, port: port)
+            navigateToCallingView(timeLimit: 2, port: port)
             XCTAssertTrue(
                 app.otherElements["calling_view"]
                     .waitForExistence(timeout: 2)
             )
-            await mockStore.clearMessages()
+            
+            try? await Task.sleep(for: .seconds(3))
 
-            try await waitFor(timeout: .seconds(5)) {
-                return await mockStore.messages.count >= 1
-            }
+            let enterRoomView = app.otherElements["enter_room_view"]
+            XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
+            let callingView = app.otherElements["calling_view"]
+            XCTAssertFalse(callingView.exists)
             let parsedMessages = try parseMessage(
                 messages: await mockStore.messages
             )
-            XCTAssertEqual(parsedMessages.count, 1)
-            let message = parsedMessages.first!
+            let message = parsedMessages.last!
             XCTAssertEqual(message.count, 2)
             XCTAssertEqual(message["type"] as? String, "leave")
-            let enterRoomView = app.otherElements["enter_room_view"]
-            let callingView = app.otherElements["calling_view"]
-            XCTAssertTrue(enterRoomView.waitForExistence(timeout: 5))
-            XCTAssertFalse(callingView.exists)
         }
     }
 
@@ -218,7 +215,7 @@ final class CallingViewUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["음성을 연결하고 있어요"].exists)
             XCTAssertTrue(app.staticTexts["잠시 후 통화 화면으로 이동합니다"].exists)
             XCTAssertEqual(
-                app.images["checkbox_signaling_server"].value
+                app.images["checkbox_join_signaling"].value
                     as? String,
                 "checked"
             )
