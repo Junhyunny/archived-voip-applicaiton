@@ -28,7 +28,6 @@ struct CallingView: View {
         )
     }
 
-    @ViewBuilder
     private func checkIcon(isChecked: Bool, identifier: String) -> some View {
         Image(systemName: isChecked ? "checkmark.square.fill" : "square")
             .accessibilityIdentifier(identifier)
@@ -76,7 +75,7 @@ struct CallingView: View {
     }
 
     @ViewBuilder
-    private var CallingView: some View {
+    private var MainSection: some View {
         switch vm.callStatus {
         case .connected:
             VStack {
@@ -87,7 +86,10 @@ struct CallingView: View {
                     Text("AI가 통화를 듣고 있어요")
                     Text("자막은 표시하지 않습니다. 통화가 끝나면 요약이 만들어집니다.")
                 }
-                Button(action: {}) {
+                Button(action: {
+                    vm.close()
+                    dismiss()
+                }) {
                     Text("통화 종료")
                 }
                 .accessibilityIdentifier("leave_call")
@@ -112,7 +114,7 @@ struct CallingView: View {
     }
 
     var body: some View {
-        CallingView
+        MainSection
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("calling_view")
             .task {
