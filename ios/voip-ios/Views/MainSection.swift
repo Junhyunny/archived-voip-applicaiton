@@ -87,15 +87,12 @@ struct CallingView: View {
                     Text("자막은 표시하지 않습니다. 통화가 끝나면 요약이 만들어집니다.")
                 }
                 Button(action: {
-                    vm.close()
                     dismiss()
                 }) {
                     Text("통화 종료")
                 }
                 .accessibilityIdentifier("leave_call")
             }
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("connected_view")
         default:
             VStack {
                 Text("연결 중")
@@ -108,8 +105,6 @@ struct CallingView: View {
                 }
                 .accessibilityIdentifier("cancel_button")
             }
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("connecting_view")
         }
     }
 
@@ -121,6 +116,19 @@ struct CallingView: View {
                 async let startCall = self.vm.startCall(roomCode: roomCode)
                 async let startTimer = timer.startTimer()
                 _ = await (startCall, startTimer)
+            }
+            .onChange(of: vm.callStatus) { _, new in
+                switch new {
+                case .connected:
+                    timer.stop()
+                case .disconnected:
+                    dismiss()
+                default:
+                    break
+                }
+            }
+            .onDisappear {
+                vm.close()
             }
             .onChange(of: timer.time) { _, new in
                 if new == 0 {

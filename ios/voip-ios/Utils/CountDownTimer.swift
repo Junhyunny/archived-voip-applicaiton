@@ -22,6 +22,7 @@ class CountDownTimer {
     private(set) var time: Int
     private let limit: Int
     private let timerClock: TimerClock
+    private var interrupt: Bool = false
 
     init(limit: Int, timerClock: TimerClock = RealTimerClock()) {
         self.time = limit
@@ -31,8 +32,12 @@ class CountDownTimer {
 
     @MainActor
     func startTimer() async {
-        time = limit    
+        interrupt = false
+        time = limit
         while time > 0 {
+            if interrupt {
+                return
+            }
             do {
                 try await timerClock.sleepOneSecond()
             } catch {
@@ -40,5 +45,10 @@ class CountDownTimer {
             }
             time -= 1
         }
+    }
+
+    @MainActor
+    func stop() {
+        interrupt = true
     }
 }
