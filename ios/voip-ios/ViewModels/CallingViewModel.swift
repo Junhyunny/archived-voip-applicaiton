@@ -70,11 +70,9 @@ class CallingViewModel {
                 case .iceCandidate(let payload):
                     await sendCandidate(candidate: payload)
                 case .connected:
-                    print("")
-                case .disconnected:
-                    print("")
-                case .failed:
-                    print("")
+                    callStatus = .connected
+                case .disconnected, .failed:
+                    callStatus = .disconnected
                 }
             }
         }

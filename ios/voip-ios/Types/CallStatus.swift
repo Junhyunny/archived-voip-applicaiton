@@ -5,7 +5,6 @@
 //  Created by 강준현 on 9/22/26.
 //
 
-
 enum CallStatus {
     case unconnected
     case idle
@@ -13,4 +12,5 @@ enum CallStatus {
     case peerJoined
     case disconnected
     case negociating
+    case connected
 }

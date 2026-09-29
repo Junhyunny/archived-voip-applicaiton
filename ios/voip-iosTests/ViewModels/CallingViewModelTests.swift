@@ -595,4 +595,86 @@ struct CallingViewModelTests {
                 )
         )
     }
+
+    @Test
+    func
+        `given starting nagociationg when connected event is received from WebRTC then call status is connected`()
+        async throws
+    {
+        await sut.startCall(roomCode: "1234")
+        mockSignalClient.continuation.yield(.peerJoined)
+        try await waitFor(timeout: Duration.seconds(5)) {
+            sut.callStatus == .negociating
+        }
+
+        mockWebRTCClient.continuation.yield(
+            .connected
+        )
+
+        try await waitFor(timeout: Duration.seconds(5)) {
+            sut.callStatus == .connected
+        }
+    }
+
+    @Test
+    func
+        `given accepting offer when connected event is received from WebRTC then call status is connected`()
+        async throws
+    {
+        await sut.startCall(roomCode: "1234")
+        mockSignalClient.continuation.yield(.offer("session document payload"))
+        try await waitFor(timeout: Duration.seconds(5)) {
+            sut.callStatus == .negociating
+        }
+
+        mockWebRTCClient.continuation.yield(
+            .connected
+        )
+
+        try await waitFor(timeout: Duration.seconds(5)) {
+            sut.callStatus == .connected
+        }
+    }
+
+    @Test
+    func
+        `given starting nagociationg when disconnected or failed event is received from WebRTC then call status is connected`()
+        async throws
+    {
+        for tc in [WebRTCEvent.disconnected, WebRTCEvent.failed] {
+            await sut.startCall(roomCode: "1234")
+            mockSignalClient.continuation.yield(.peerJoined)
+            try await waitFor(timeout: Duration.seconds(5)) {
+                sut.callStatus == .negociating
+            }
+
+            mockWebRTCClient.continuation.yield(tc)
+
+            try await waitFor(timeout: Duration.seconds(5)) {
+                sut.callStatus == .disconnected
+            }
+        }
+    }
+
+    @Test
+    func
+        `given accepting offer when disconnected or failed event is received from WebRTC then call status is connected`()
+        async throws
+    {
+        for tc in [WebRTCEvent.disconnected, WebRTCEvent.failed] {
+            await sut.startCall(roomCode: "1234")
+            mockSignalClient.continuation.yield(
+                .offer("session document payload")
+            )
+            try await waitFor(timeout: Duration.seconds(5)) {
+                sut.callStatus == .negociating
+            }
+
+            mockWebRTCClient.continuation.yield(tc)
+
+            try await waitFor(timeout: Duration.seconds(5)) {
+                sut.callStatus == .disconnected
+            }
+        }
+    }
 }
