@@ -11,10 +11,9 @@ nonisolated protocol WebRTCClient {
     var events: AsyncStream<WebRTCEvent> { get }
 
     func createOffer() async throws -> String
-    func setRemoteOffer(_ sdp: String) async throws
-    func createAnswer() async throws -> String
+    func acceptOffer(_ sdp: String) async throws -> String
     func setRemoteAnswer(_ sdp: String) async throws
-    func addCandidate(_ candidate: IceCandidatePayload) async
+    func addCandidate(_ candidate: IceCandidatePayload) async throws
     func close()
 }
 
@@ -117,17 +116,22 @@ nonisolated class WebRTCClientImpl: NSObject, WebRTCClient {
         return offer.sdp
     }
 
-    func setRemoteOffer(_ sdp: String) async throws {
+    private func setRemoteOffer(_ sdp: String) async throws {
         try await peerConnection.setRemoteDescription(
             RTCSessionDescription(type: .offer, sdp: sdp)
         )
         await drainBufferedCandidates()
     }
 
-    func createAnswer() async throws -> String {
+    private func createAnswer() async throws -> String {
         let answer = try await peerConnection.answer(for: Self.emptyConstraints)
         try await peerConnection.setLocalDescription(answer)
         return answer.sdp
+    }
+
+    func acceptOffer(_ sdp: String) async throws -> String {
+        try await setRemoteOffer(sdp)
+        return try await createAnswer()
     }
 
     func setRemoteAnswer(_ sdp: String) async throws {
@@ -137,7 +141,7 @@ nonisolated class WebRTCClientImpl: NSObject, WebRTCClient {
         await drainBufferedCandidates()
     }
 
-    func addCandidate(_ candidate: IceCandidatePayload) async {
+    func addCandidate(_ candidate: IceCandidatePayload) async throws {
         let iceCandidate = RTCIceCandidate(
             sdp: candidate.candidate,
             sdpMLineIndex: candidate.sdpMLineIndex,
@@ -147,10 +151,10 @@ nonisolated class WebRTCClientImpl: NSObject, WebRTCClient {
         do {
             try await peerConnection.add(iceCandidate)
         } catch {
-            print("failed to add ice candidate", error)
+            throw error
         }
     }
-    
+
     func close() {
         peerConnection.close()
         continuation.finish()

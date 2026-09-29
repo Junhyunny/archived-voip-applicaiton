@@ -12,4 +12,5 @@ enum CallStatus {
     case joined
     case peerJoined
     case disconnected
+    case negociating
 }

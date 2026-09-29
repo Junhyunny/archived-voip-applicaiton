@@ -7,16 +7,9 @@
 
 @testable import voip_ios
 
-enum MockSignalError: Error {
-    case sample
-}
+
 
 class MockSignalClient: SignalClient {
-    private(set) var connectCalledTimes: Int = 0
-    private(set) var joinCalledTimes: Int = 0
-    private(set) var joinRoomCode: String?
-    var connectError: MockSignalError?
-    var joinError: MockSignalError?
 
     let events: AsyncStream<voip_ios.SignalEvent>
     private(set) var continuation: AsyncStream<SignalEvent>.Continuation
@@ -29,12 +22,19 @@ class MockSignalClient: SignalClient {
         self.continuation = continuation
     }
 
+    private(set) var connectCalledTimes: Int = 0
+    var connectError: MockError?
+
     func connect() async throws {
         connectCalledTimes += 1
         if let error = connectError {
             throw error
         }
     }
+
+    private(set) var joinCalledTimes: Int = 0
+    private(set) var joinRoomCode: String?
+    var joinError: MockError?
 
     func join(roomCode: String) async throws {
         joinCalledTimes += 1
@@ -44,15 +44,39 @@ class MockSignalClient: SignalClient {
         }
     }
 
-    func send(offer: String) async throws {
+    private(set) var sendOfferCallTimes: Int = 0
+    private(set) var sendOfferSdp: String?
+    var sendOfferError: MockError?
 
+    func send(offer: String) async throws {
+        sendOfferCallTimes += 1
+        sendOfferSdp = offer
+        if let error = sendOfferError {
+            throw error
+        }
     }
+
+    private(set) var sendAnswerCallTimes: Int = 0
+    private(set) var sendAnswerSdp: String?
+    var sendAnswerError: MockError?
 
     func send(answer: String) async throws {
-
+        sendAnswerCallTimes += 1
+        sendAnswerSdp = answer
+        if let error = sendAnswerError {
+            throw error
+        }
     }
 
-    func send(candidate: IceCandidatePayload) async throws {
+    private(set) var sendCandidateCallTimes: Int = 0
+    private(set) var sendCandidateCnadidate: IceCandidatePayload?
+    var sendCandidateError: MockError?
 
+    func send(candidate: IceCandidatePayload) async throws {
+        sendCandidateCallTimes += 1
+        sendCandidateCnadidate = candidate
+        if let error = sendCandidateError {
+            throw error
+        }
     }
 }

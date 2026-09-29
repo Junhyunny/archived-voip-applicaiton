@@ -142,28 +142,11 @@ struct WebRTCClientTests {
 
         #expect(pc.remoteDescription == nil)
 
-        try await sut.setRemoteOffer(otherClientOfferSdp)
+        let answer = try await sut.acceptOffer(otherClientOfferSdp)
 
         #expect(pc.remoteDescription != nil)
         #expect(pc.remoteDescription?.sdp == otherClientOfferSdp)
         #expect(pc.remoteDescription?.type == .offer)
-        #expect(pc.signalingState == .haveRemoteOffer)
-    }
-
-    @Test
-    func
-        `given set remote by using other client offer when create answer then set local description and return sdp information`()
-        async throws
-    {
-        let otherClient = WebRTCClientImpl()
-        let otherClientOfferSdp = try await otherClient.createOffer()
-        try await sut.setRemoteOffer(otherClientOfferSdp)
-        let pc = try #require(mockConnectionFactory.createdConnection)
-
-        #expect(pc.localDescription == nil)
-
-        let answer = try await sut.createAnswer()
-
         #expect(answer.contains("m=audio"))
         #expect(answer.contains("a=sendrecv"))
         #expect(answer.contains("a=mid:0"))
@@ -182,10 +165,9 @@ struct WebRTCClientTests {
         let pc = try #require(mockConnectionFactory.createdConnection)
         let otherClient = WebRTCClientImpl()
         let otherClientOfferSdp = try await otherClient.createOffer()
-        try await sut.setRemoteOffer(otherClientOfferSdp)
         #expect(pc.iceGatheringState == .new)
 
-        _ = try await sut.createAnswer()
+        _ = try await sut.acceptOffer(otherClientOfferSdp)
 
         for await case .iceCandidate in sut.events {
             #expect(pc.iceGatheringState != .new)
@@ -201,8 +183,7 @@ struct WebRTCClientTests {
     {
         let myOffer = try await sut.createOffer()
         let otherClient = WebRTCClientImpl()
-        try await otherClient.setRemoteOffer(myOffer)
-        let otherClientAnswerSdp = try await otherClient.createAnswer()
+        let otherClientAnswerSdp = try await otherClient.acceptOffer(myOffer)
         let pc = try #require(mockConnectionFactory.createdConnection)
 
         #expect(pc.remoteDescription == nil)
@@ -222,10 +203,10 @@ struct WebRTCClientTests {
     {
         let otherClient = WebRTCClientImpl()
         let otherClientOfferSdp = try await otherClient.createOffer()
-        try await sut.setRemoteOffer(otherClientOfferSdp)
+        _ = try await sut.acceptOffer(otherClientOfferSdp)
         let pc = try #require(mockConnectionFactory.createdConnection)
 
-        await sut.addCandidate(
+        try await sut.addCandidate(
             IceCandidatePayload(
                 candidate:
                     "candidate:1 1 udp 2122260223 192.168.0.4 54348 typ host",
@@ -244,7 +225,7 @@ struct WebRTCClientTests {
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
 
-        await sut.addCandidate(
+        try await sut.addCandidate(
             IceCandidatePayload(
                 candidate:
                     "candidate:1 1 udp 2122260223 192.168.0.4 54348 typ host",
@@ -265,7 +246,7 @@ struct WebRTCClientTests {
         let otherClientOfferSdp = try await otherClient.createOffer()
         let pc = try #require(mockConnectionFactory.createdConnection)
 
-        await sut.addCandidate(
+        try await sut.addCandidate(
             IceCandidatePayload(
                 candidate:
                     "candidate:1 1 udp 2122260223 192.168.0.4 54348 typ host",
@@ -274,7 +255,7 @@ struct WebRTCClientTests {
             )
         )
 
-        try await sut.setRemoteOffer(otherClientOfferSdp)
+        _ = try await sut.acceptOffer(otherClientOfferSdp)
 
         try await waitFor { candidateLines(pc.remoteDescription?.sdp) == 1 }
         #expect(candidateLines(pc.remoteDescription?.sdp) == 1)
@@ -287,12 +268,11 @@ struct WebRTCClientTests {
     {
         let myOffer = try await sut.createOffer()
         let otherClient = WebRTCClientImpl()
-        try await otherClient.setRemoteOffer(myOffer)
-        let otherClientAnswerSdp = try await otherClient.createAnswer()
+        let otherClientAnswerSdp = try await otherClient.acceptOffer(myOffer)
         try await sut.setRemoteAnswer(otherClientAnswerSdp)
         let pc = try #require(mockConnectionFactory.createdConnection)
 
-        await sut.addCandidate(
+        try await sut.addCandidate(
             IceCandidatePayload(
                 candidate:
                     "candidate:1 1 udp 2122260223 192.168.0.4 54348 typ host",
@@ -312,11 +292,10 @@ struct WebRTCClientTests {
     {
         let myOffer = try await sut.createOffer()
         let otherClient = WebRTCClientImpl()
-        try await otherClient.setRemoteOffer(myOffer)
-        let otherClientAnswerSdp = try await otherClient.createAnswer()
+        let otherClientAnswerSdp = try await otherClient.acceptOffer(myOffer)
         let pc = try #require(mockConnectionFactory.createdConnection)
 
-        await sut.addCandidate(
+        try await sut.addCandidate(
             IceCandidatePayload(
                 candidate:
                     "candidate:1 1 udp 2122260223 192.168.0.4 54348 typ host",
@@ -343,6 +322,62 @@ struct WebRTCClientTests {
         #expect(pc.connectionState == .closed)
         #expect(pc.senders.isEmpty)
         for await _ in sut.events {}
+    }
+
+    @Test
+    func
+        `given new state is connected when peerConect then connected event is yield`()
+        async throws
+    {
+        var iterator = sut.events.makeAsyncIterator()
+        let pc = try #require(mockConnectionFactory.createdConnection)
+
+        sut.peerConnection(pc, didChange: RTCPeerConnectionState.connected)
+
+        let event = await iterator.next()
+        #expect(event == .connected)
+    }
+
+    @Test
+    func
+        `given new state is disconnected when peerConect then disconnected event is yield`()
+        async throws
+    {
+        var iterator = sut.events.makeAsyncIterator()
+        let pc = try #require(mockConnectionFactory.createdConnection)
+
+        sut.peerConnection(pc, didChange: RTCPeerConnectionState.disconnected)
+
+        let event = await iterator.next()
+        #expect(event == .disconnected)
+    }
+
+    @Test
+    func
+        `given new state is closed when peerConect then disconnected event is yield`()
+        async throws
+    {
+        var iterator = sut.events.makeAsyncIterator()
+        let pc = try #require(mockConnectionFactory.createdConnection)
+
+        sut.peerConnection(pc, didChange: RTCPeerConnectionState.closed)
+
+        let event = await iterator.next()
+        #expect(event == .disconnected)
+    }
+    
+    @Test
+    func
+        `given new state is failed when peerConect then failed event is yield`()
+        async throws
+    {
+        var iterator = sut.events.makeAsyncIterator()
+        let pc = try #require(mockConnectionFactory.createdConnection)
+
+        sut.peerConnection(pc, didChange: RTCPeerConnectionState.failed)
+
+        let event = await iterator.next()
+        #expect(event == .failed)
     }
 }
 

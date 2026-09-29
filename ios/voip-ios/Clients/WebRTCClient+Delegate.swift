@@ -30,7 +30,9 @@ extension WebRTCClientImpl: RTCPeerConnectionDelegate {
     }
 
     func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        print("peer connection is finished at the first time. no re-negotiation")
+        print(
+            "peer connection is finished at the first time. no re-negotiation"
+        )
     }
 
     func peerConnection(
@@ -66,7 +68,18 @@ extension WebRTCClientImpl: RTCPeerConnectionDelegate {
         _ peerConnection: RTCPeerConnection,
         didChange newState: RTCPeerConnectionState
     ) {
-        // TODO
+        switch newState {
+        case .connected:
+            continuation.yield(.connected)
+        case .new, .connecting:
+            break
+        case .disconnected, .closed:
+            continuation.yield(.disconnected)
+        case .failed:
+            continuation.yield(.failed)
+        @unknown default:
+            break
+        }
     }
 
     func peerConnection(

@@ -53,7 +53,10 @@
 		A6ADC9F73064DFD400D800F6 /* Exceptions for "TestSupport" folder in "voip-ios" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				MockAudioSessionManager.swift,
+				MockError.swift,
 				MockSignalClient.swift,
+				MockWebRTCClient.swift,
 				MockWSMessageHandler.swift,
 				TestTimerClock.swift,
 				TestUtils.swift,
@@ -63,7 +66,10 @@
 		A6ADC9F83064DFD400D800F6 /* Exceptions for "TestSupport" folder in "voip-iosTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				MockAudioSessionManager.swift,
+				MockError.swift,
 				MockSignalClient.swift,
+				MockWebRTCClient.swift,
 				MockWSMessageHandler.swift,
 				TestTimerClock.swift,
 				TestUtils.swift,
