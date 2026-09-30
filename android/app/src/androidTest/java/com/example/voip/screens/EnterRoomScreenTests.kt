@@ -1,4 +1,4 @@
-package com.example.voip
+package com.example.voip.screens
 
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -11,20 +11,28 @@ import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class MainActivityTests {
+class EnterRoomScreenTests {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+    val composeTestRule = createComposeRule()
     val buttonRole = SemanticsMatcher.expectValue(
         SemanticsProperties.Role, Role.Button
     )
+
+    @Before
+    fun setup() {
+        composeTestRule.setContent {
+            EnterRoomScreen({})
+        }
+    }
 
     @Test
     fun when_render_then_heading_and_description_are_shown() {

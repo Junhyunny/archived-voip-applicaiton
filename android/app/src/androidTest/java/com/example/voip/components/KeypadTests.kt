@@ -1,4 +1,4 @@
-package com.example.voip
+package com.example.voip.components
 
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -7,24 +7,32 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.example.voip.screens.EnterRoomScreen
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
-class MainActivityKeypadTests(
+class KeypadTests(
     private val tc: List<String>
 ) {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
-
+    val composeTestRule = createComposeRule()
     val buttonRole = SemanticsMatcher.expectValue(
         SemanticsProperties.Role, Role.Button
     )
+
+    @Before
+    fun setup() {
+        composeTestRule.setContent {
+            EnterRoomScreen({})
+        }
+    }
 
     @Test
     fun given_render_when_click_4_digits_then_4_digits_are_shown_in_digit_section() {

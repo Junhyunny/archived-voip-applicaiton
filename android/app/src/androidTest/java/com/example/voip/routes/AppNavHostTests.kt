@@ -1,4 +1,4 @@
-package com.example.voip
+package com.example.voip.routes
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
@@ -12,10 +12,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.voip.routes.AppNavHost
-import com.example.voip.routes.CallRoute
-import com.example.voip.routes.EnterRoomRoute
-import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,7 +42,7 @@ class AppNavHostTests {
 
     @Test
     fun when_render_then_default_route_is_enter_room_screen() {
-        assertTrue(navController.currentDestination?.hasRoute<EnterRoomRoute>() == true)
+        TestCase.assertTrue(navController.currentDestination?.hasRoute<EnterRoomRoute>() == true)
     }
 
     @Test
@@ -57,7 +54,7 @@ class AppNavHostTests {
 
         composeTestRule.onNodeWithText("통화 시작").performClick()
 
-        assertTrue(navController.currentDestination?.hasRoute<CallRoute>() == true)
+        TestCase.assertTrue(navController.currentDestination?.hasRoute<CallRoute>() == true)
         composeTestRule.onNode(hasText("1234")).assertExists()
     }
 }
