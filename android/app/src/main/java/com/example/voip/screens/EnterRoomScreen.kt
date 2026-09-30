@@ -19,7 +19,9 @@ import com.example.voip.components.Keypad
 import com.example.voip.components.NumberKey
 
 @Composable
-fun EnterRoomScreen() {
+fun EnterRoomScreen(
+    onCallStartClick: (String) -> Unit
+) {
     var roomCode by remember { mutableStateOf("") }
 
     val onKeyPress = { key: NumberKey ->
@@ -58,7 +60,7 @@ fun EnterRoomScreen() {
         }
         Keypad(onKeyPress = onKeyPress)
         Button(
-            onClick = {},
+            onClick = { onCallStartClick(roomCode) },
             enabled = roomCode.length == 4,
             modifier = Modifier.fillMaxWidth()
         ) {

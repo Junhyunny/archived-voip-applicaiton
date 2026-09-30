@@ -4,13 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.voip.routes.AppNavHost
 import com.example.voip.screens.EnterRoomScreen
 import com.example.voip.ui.theme.VoipandroidTheme
 
@@ -20,7 +16,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VoipandroidTheme {
-                EnterRoomScreen()
+                AppNavHost()
             }
         }
     }
@@ -30,6 +26,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     VoipandroidTheme {
-        EnterRoomScreen()
+        EnterRoomScreen({})
     }
 }
