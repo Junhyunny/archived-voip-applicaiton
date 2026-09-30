@@ -65,14 +65,14 @@ struct CallingView: View {
         VStack {
             HStack {
                 checkIcon(
-                    isChecked: vm.callStatus.joinSignaling,
+                    isChecked: vm.callStatus.isJoinSignaling,
                     identifier: "checkbox_join_signaling"
                 )
                 Text("시그널링 서버 연결")
             }
             HStack {
                 checkIcon(
-                    isChecked: vm.callStatus.peerJoined,
+                    isChecked: vm.callStatus.isPeerJoined,
                     identifier: "checkbox_peer_joined"
                 )
                 Text("상대방 입장")

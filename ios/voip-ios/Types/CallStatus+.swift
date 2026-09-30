@@ -6,7 +6,7 @@
 //
 
 extension CallStatus {
-    var joinSignaling: Bool {
+    var isJoinSignaling: Bool {
         switch self {
         case .joined, .negotiating, .connected:
             true
@@ -15,7 +15,7 @@ extension CallStatus {
         }
     }
 
-    var peerJoined: Bool {
+    var isPeerJoined: Bool {
         switch self {
         case .negotiating, .connected:
             true
