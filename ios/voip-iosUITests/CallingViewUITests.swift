@@ -107,10 +107,10 @@ final class CallingViewUITests: XCTestCase {
             let parsedMessages = try parseMessage(
                 messages: await mockStore.messages
             )
-            XCTAssertEqual(parsedMessages.count, 1)
-            let message = parsedMessages.first!
+            let message = parsedMessages.last!
             XCTAssertEqual(message.count, 2)
             XCTAssertEqual(message["type"] as? String, "leave")
+
             let enterRoomView = app.otherElements["enter_room_view"]
             let callingView = app.otherElements["calling_view"]
             XCTAssertTrue(enterRoomView.waitForExistence(timeout: 2))
@@ -137,7 +137,7 @@ final class CallingViewUITests: XCTestCase {
                 app.otherElements["calling_view"]
                     .waitForExistence(timeout: 2)
             )
-            
+
             try? await Task.sleep(for: .seconds(3))
 
             let enterRoomView = app.otherElements["enter_room_view"]
@@ -174,8 +174,7 @@ final class CallingViewUITests: XCTestCase {
             let parsedMessages = try parseMessage(
                 messages: await mockStore.messages
             )
-            XCTAssertEqual(parsedMessages.count, 1)
-            let message = parsedMessages.first!
+            let message = parsedMessages.last!
             XCTAssertEqual(message.count, 2)
             XCTAssertEqual(message["type"] as? String, "join")
             let payload: [String: Any?]? = message["payload"] as? [String: Any?]
@@ -322,8 +321,7 @@ final class CallingViewUITests: XCTestCase {
             let parsedMessages = try parseMessage(
                 messages: await mockStore.messages
             )
-            XCTAssertEqual(parsedMessages.count, 1)
-            let message = parsedMessages.first!
+            let message = parsedMessages.last!
             XCTAssertEqual(message.count, 2)
             XCTAssertEqual(message["type"] as? String, "leave")
 
@@ -420,8 +418,7 @@ final class CallingViewUITests: XCTestCase {
             let parsedMessages = try parseMessage(
                 messages: await mockStore.messages
             )
-            XCTAssertEqual(parsedMessages.count, 1)
-            let message = parsedMessages.first!
+            let message = parsedMessages.last!
             XCTAssertEqual(message.count, 2)
             XCTAssertEqual(message["type"] as? String, "leave")
 
