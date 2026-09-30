@@ -13,7 +13,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_render_then_see_number_keypad() throws {
+    func test_when_render_then_number_keypad_is_shown() throws {
         let app = XCUIApplication()
         app.launch()
 
@@ -22,7 +22,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_render_keypad_then_see_numbers_and_delete_button() throws {
+    func test_when_render_then_numbers_and_delete_button_are_shown() throws {
         let app = XCUIApplication()
         app.launch()
 
@@ -43,7 +43,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_render_then_see_heading_and_description() {
+    func test_when_render_then_heading_and_description_are_shown() {
         let app = XCUIApplication()
         app.launch()
 
@@ -56,7 +56,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_render_then_see_disabled_call_button() {
+    func test_when_render_then_call_button_is_disabled() {
         let app = XCUIApplication()
         app.launch()
 
@@ -69,7 +69,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_tapping_4_digits_then_see_enabled_call_button() {
+    func test_when_tap_4_digits_then_call_button_is_enabled() {
         let cases = [
             ["1", "2", "3", "4"],
             ["5", "6", "7", "8"],
@@ -94,9 +94,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func
-        test_when_tapping_4_digits_then_see_tapped_digits_in_each_input_fields()
-    {
+    func test_when_tap_4_digits_then_tapped_digits_are_shown_in_input_fields() {
         let app = XCUIApplication()
         app.launch()
 
@@ -116,9 +114,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func
-        test_when_tapping_more_than_4_digits_then_cannot_input_more_than_4_digits()
-    {
+    func test_when_tap_more_than_4_digits_then_only_4_digits_are_shown() {
         let app = XCUIApplication()
         app.launch()
 
@@ -137,7 +133,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_tapping_more_than_4_digits_then_see_enable_call_button() {
+    func test_when_tap_more_than_4_digits_then_call_button_is_enabled() {
         let cases = [
             ["1", "2", "3", "4", "5"],
             ["5", "6", "7", "8", "9"],
@@ -159,7 +155,7 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_tap_delete_button_then_remove_last_digit() {
+    func test_when_tap_delete_button_then_last_digit_is_removed() {
         let app = XCUIApplication()
         app.launch()
 
@@ -178,7 +174,9 @@ final class EnterRoomViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_given_5_digits_when_tap_delete_button_then_remove_last_digit() {
+    func
+        test_given_5_digits_are_tapped_when_tap_delete_button_then_last_digit_is_removed()
+    {
         let app = XCUIApplication()
         app.launch()
 
@@ -200,7 +198,7 @@ final class EnterRoomViewUITests: XCTestCase {
 
     @MainActor
     func
-        test_when_tap_delete_button_more_than_entered_digits_then_remove_all_digit()
+        test_when_tap_delete_button_more_than_entered_digits_then_all_digits_are_removed()
     {
         let app = XCUIApplication()
         app.launch()

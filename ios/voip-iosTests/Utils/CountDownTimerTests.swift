@@ -1,5 +1,5 @@
 //
-//  Timer.swift
+//  CountDownTimerTests.swift
 //  voip-ios
 //
 //  Created by 강준현 on 9/22/26.
@@ -11,17 +11,19 @@ import Testing
 
 @Suite(.timeLimit(.minutes(1)))
 @MainActor
-struct TimerTests {
+struct CountDownTimerTests {
 
     @Test
-    func default_timer_seconds_is_60() throws {
+    func `given limit is 60 when init timer then time is 60`() throws {
         let sut = CountDownTimer(limit: 60)
 
         #expect(sut.time == 60)
     }
 
     @Test
-    func when_start_timer_then_timer_seconds_is_decreased_by_1() async throws {
+    func `when start timer then time is decreased by 1 every second`()
+        async throws
+    {
         let testTimerClock = TestTimerClock()
         let sut = CountDownTimer(
             limit: 60,

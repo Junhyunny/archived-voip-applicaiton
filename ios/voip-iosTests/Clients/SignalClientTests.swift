@@ -1,5 +1,5 @@
 //
-//  SignalingClientTests.swift
+//  SignalClientTests.swift
 //  voip-ios
 //
 //  Created by 강준현 on 9/21/26.
@@ -16,9 +16,7 @@ import XCTest
 struct SignalClientTests {
 
     @Test
-    func when_connect_then_connect_signaling_event_yield()
-        async throws
-    {
+    func `when connect then connected event is yielded`() async throws {
         let mockStore = MockMessageStore()
         try await withMockServer(
             store: mockStore,
@@ -40,8 +38,7 @@ struct SignalClientTests {
     }
 
     @Test
-    func
-        given_join_is_possible_when_join_then_server_receive_join_request()
+    func `given join is possible when join then server receives join request`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -83,8 +80,7 @@ struct SignalClientTests {
     }
 
     @Test
-    func
-        given_join_is_possible_when_join_then_joined_signaling_event_yield()
+    func `given join is possible when join then joined event is yielded`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -119,8 +115,7 @@ struct SignalClientTests {
     }
 
     @Test
-    func
-        given_join_is_impossible_when_join_then_join_failed_signaling_event_yield()
+    func `given join is impossible when join then joinFailed event is yielded`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -156,7 +151,7 @@ struct SignalClientTests {
 
     @Test
     func
-        given_peer_joined_when_join_then_peer_joined_signaling_event_yield()
+        `given peer joined message comes when join then peerJoined event is yielded`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -190,9 +185,8 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when send offer then server receives offer request`()
-        async throws
-    {
+    @Test
+    func `when send offer then server receives offer request`() async throws {
         let mockStore = MockMessageStore()
         try await withMockServer(
             store: mockStore,
@@ -223,7 +217,8 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when receive offer message then yield offer event`()
+    @Test
+    func `when receive offer message then offer event is yielded`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -260,9 +255,8 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when send answer then server receives answer request`()
-        async throws
-    {
+    @Test
+    func `when send answer then server receives answer request`() async throws {
         let mockStore = MockMessageStore()
         let mockHandler = MockWSMessageHandler(store: mockStore)
         try await withMockServer(
@@ -297,7 +291,8 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when receive answer message then yield answer event`()
+    @Test
+    func `when receive answer message then answer event is yielded`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -334,7 +329,8 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when receive peerLeft message then yield peerLeft event`()
+    @Test
+    func `when receive peerLeft message then peerLeft event is yielded`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -368,7 +364,8 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when send ice candidate then server receives offer request`()
+    @Test
+    func `when send ice candidate then server receives ice candidate request`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -413,7 +410,8 @@ struct SignalClientTests {
     }
 
     @Test
-    func `when receive iceCandidate message then yeild iceCandidate event`()
+    func
+        `when receive iceCandidate message then iceCandidate event is yielded`()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -461,7 +459,10 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when send after close then throws taskNotCreated`() async throws
+    @Test
+    func
+        `given client is closed when join or send then taskNotCreated error is thrown`()
+        async throws
     {
         let mockStore = MockMessageStore()
         let mockHandler = MockWSMessageHandler(store: mockStore)
@@ -488,7 +489,8 @@ struct SignalClientTests {
         }
     }
 
-    @Test func `when leave then send leave message`() async throws {
+    @Test
+    func `when leave then server receives leave request`() async throws {
         let mockStore = MockMessageStore()
         let mockHandler = MockWSMessageHandler(store: mockStore)
         try await withMockServer(

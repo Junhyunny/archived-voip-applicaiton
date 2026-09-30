@@ -37,13 +37,13 @@ struct CallingViewModelTests {
         )
     }
 
-    @Test func `initial call status is unconnected`() async throws {
+    @Test
+    func `when init view model then call status is unconnected`() async throws {
         #expect(sut.callStatus == .unconnected)
     }
 
     @Test
-    func
-        `when start call then signalClinet's connect, join funciton are called`()
+    func `when start call then signalClient connect and join are called`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
@@ -55,10 +55,7 @@ struct CallingViewModelTests {
     }
 
     @Test
-    func
-        `when start call then signalClinet's signal event is observed`()
-        async throws
-    {
+    func `when start call then signal events are observed`() async throws {
         await sut.startCall(roomCode: "1234")
 
         mockSignalClient.continuation.yield(.connected)
@@ -109,7 +106,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given start call when peerJoined event is received then start negotiating`()
+        `given start call when peerJoined event is received then negotiation is started`()
         async throws
     {
         mockWebRTCClient.createOfferReturn = "session document payload"
@@ -164,7 +161,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given start call when offer event is received then accept offer and send answer`()
+        `given start call when offer event is received then offer is accepted and answer is sent`()
         async throws
     {
         mockWebRTCClient.acceptOfferReturn = "session document payload"
@@ -306,7 +303,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given accepted offer when iceCandidate event is received then add candidates into WebRTCClient`()
+        `given accepted offer when iceCandidate event is received then candidates are added into webRTCClient`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
@@ -373,7 +370,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given iceCandidate event is received early when offer event is received lately then add candidates in accept offer phase`()
+        `given iceCandidate event is received early when offer event is received lately then candidates are added in accept offer phase`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
@@ -411,7 +408,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given iceCandidate event is received early when offer event is received two times lately then do not add previous pending candidates again`()
+        `given iceCandidate event is received early when offer event is received two times lately then previous pending candidates are not added again`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
@@ -450,7 +447,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given starting negotiating when iceCandidate event is received from WebRTC then send candidates to other peer`()
+        `given starting negotiating when iceCandidate event is received from WebRTC then candidates are sent to other peer`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
@@ -524,7 +521,7 @@ struct CallingViewModelTests {
 
     @Test
     func
-        `given accepting offer when iceCandidate event is received from WebRTC then send candidates to other peer`()
+        `given accepting offer when iceCandidate event is received from WebRTC then candidates are sent to other peer`()
         async throws
     {
         await sut.startCall(roomCode: "1234")
@@ -679,9 +676,7 @@ struct CallingViewModelTests {
     }
 
     @Test
-    func `when close then send leave message to server`()
-        async throws
-    {
+    func `when close then leave message is sent to server`() async throws {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor { sut.callStatus == .negotiating }
@@ -709,7 +704,8 @@ struct CallingViewModelTests {
         #expect(mockWebRTCClient.closeCalledTimes == 1)
     }
 
-    @Test func `when close then signal events are ignored`() async throws {
+    @Test
+    func `when close then signal events are ignored`() async throws {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.joined)
         try await waitFor { sut.callStatus == .joined }
@@ -721,7 +717,8 @@ struct CallingViewModelTests {
         #expect(sut.callStatus == .joined)
     }
 
-    @Test func `when close then webRTC events are ignored`() async throws {
+    @Test
+    func `when close then webRTC events are ignored`() async throws {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
         try await waitFor { sut.callStatus == .negotiating }

@@ -1,5 +1,5 @@
 //
-//  voip_iosUITestsLaunchTests.swift
+//  LaunchUITests.swift
 //  voip-iosUITests
 //
 //  Created by 강준현 on 9/17/26.
@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class voip_iosUITestsLaunchTests: XCTestCase {
+final class LaunchUITests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
@@ -18,7 +18,7 @@ final class voip_iosUITestsLaunchTests: XCTestCase {
     }
 
     @MainActor
-    func testLaunch() throws {
+    func test_when_launch_then_launch_screen_is_captured() throws {
         let app = XCUIApplication()
         app.launch()
 

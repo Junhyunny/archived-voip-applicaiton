@@ -49,7 +49,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `when init client then peerConnection is called proper configuration and media constraints`()
+        `when init client then peer connection is created with proper configuration and media constraints`()
         async throws
     {
         #expect(mockConnectionFactory.peerConnection_called_times == 1)
@@ -75,7 +75,8 @@ struct WebRTCClientTests {
         #expect(pc.signalingState == .stable)
     }
 
-    @Test func `when init client then peerConnection has self as a delegate`()
+    @Test
+    func `when init client then peer connection has self as a delegate`()
         async throws
     {
         let pc = mockConnectionFactory.createdConnection
@@ -83,7 +84,8 @@ struct WebRTCClientTests {
         #expect(pc?.delegate === sut)
     }
 
-    @Test func `when init client then add audio track to peerConnection`()
+    @Test
+    func `when init client then audio track is added to peer connection`()
         async throws
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
@@ -98,8 +100,7 @@ struct WebRTCClientTests {
     }
 
     @Test
-    func
-        `when create offer then set local description and return sdp information`()
+    func `when create offer then local description is set and sdp is returned`()
         async throws
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
@@ -118,7 +119,8 @@ struct WebRTCClientTests {
         #expect(pc.signalingState == .haveLocalOffer)
     }
 
-    @Test func `when create offer then collect ice candidates`() async throws {
+    @Test
+    func `when create offer then ice candidates are collected`() async throws {
         let pc = try #require(mockConnectionFactory.createdConnection)
         #expect(pc.iceGatheringState == .new)
 
@@ -133,7 +135,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `when set remote then remote description is changed in peer connection`()
+        `given other client offer comes when accept offer then local description is set as answer`()
         async throws
     {
         let otherClient = WebRTCClientImpl()
@@ -159,7 +161,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given set remote by using other client offer when create answer then collect ice candidates`()
+        `given other client offer comes when accept offer then ice candidates are collected`()
         async throws
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
@@ -178,7 +180,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given other client answer comes when set remote then remote description is changed in peer connection`()
+        `given other client answer comes when set remote answer then remote description is changed in peer connection`()
         async throws
     {
         let myOffer = try await sut.createOffer()
@@ -198,7 +200,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given offer comes and remote added when add candidate then candidate is added`()
+        `given other client offer is accepted when add candidate then candidate is added into peer connection`()
         async throws
     {
         let otherClient = WebRTCClientImpl()
@@ -220,7 +222,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given remote description is not existed when add candidate then candidate is not added into peer connection`()
+        `given remote description does not exist when add candidate then candidate is not added into peer connection`()
         async throws
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
@@ -239,7 +241,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given add candidate is skipped when set remote description for offer then candidate is added into peer connection`()
+        `given candidate comes before remote description when accept offer then pending candidate is added into peer connection`()
         async throws
     {
         let otherClient = WebRTCClientImpl()
@@ -263,7 +265,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given other client's answer comes then add candidate then candidate is added into peer connection`()
+        `given other client answer is accepted when add candidate then candidate is added into peer connection`()
         async throws
     {
         let myOffer = try await sut.createOffer()
@@ -287,7 +289,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given add candidate is skipped when set remote description for other client's answer then candidate is added into peer connection`()
+        `given candidate comes before remote description when set remote answer then pending candidate is added into peer connection`()
         async throws
     {
         let myOffer = try await sut.createOffer()
@@ -311,7 +313,8 @@ struct WebRTCClientTests {
     }
 
     @Test
-    func `when close then state is closed and senders is empty`()
+    func
+        `when close then peer connection state is closed and senders are empty`()
         async throws
     {
         let pc = try #require(mockConnectionFactory.createdConnection)
@@ -326,7 +329,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given new state is connected when peerConect then connected event is yield`()
+        `given new state is connected when peer connection state changes then connected event is yielded`()
         async throws
     {
         var iterator = sut.events.makeAsyncIterator()
@@ -340,7 +343,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given new state is disconnected when peerConect then disconnected event is yield`()
+        `given new state is disconnected when peer connection state changes then disconnected event is yielded`()
         async throws
     {
         var iterator = sut.events.makeAsyncIterator()
@@ -354,7 +357,7 @@ struct WebRTCClientTests {
 
     @Test
     func
-        `given new state is closed when peerConect then disconnected event is yield`()
+        `given new state is closed when peer connection state changes then disconnected event is yielded`()
         async throws
     {
         var iterator = sut.events.makeAsyncIterator()
@@ -368,7 +371,7 @@ struct WebRTCClientTests {
     
     @Test
     func
-        `given new state is failed when peerConect then failed event is yield`()
+        `given new state is failed when peer connection state changes then failed event is yielded`()
         async throws
     {
         var iterator = sut.events.makeAsyncIterator()

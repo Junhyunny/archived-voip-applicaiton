@@ -13,7 +13,7 @@ final class ContentViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_tap_start_call_button_then_move_to_calling_page() {
+    func test_when_tap_call_button_then_calling_view_is_shown() {
         let app = XCUIApplication()
         app.launch()
 

@@ -34,7 +34,7 @@ final class CallingViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_render_then_see_connecting_information() async throws {
+    func test_when_render_then_connecting_information_is_shown() async throws {
         let mockStore = MockMessageStore()
         let mockHandler = MockWSMessageHandler(store: mockStore)
         try await withMockServer(
@@ -80,7 +80,7 @@ final class CallingViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_tap_cancel_button_then_navigate_enter_room_view()
+    func test_when_tap_cancel_button_then_enter_room_view_is_shown()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -120,7 +120,7 @@ final class CallingViewUITests: XCTestCase {
 
     @MainActor
     func
-        test_given_2s_are_left_when_2s_are_passed_then_navigate_enter_room_view()
+        test_given_2s_are_left_when_2s_are_passed_then_enter_room_view_is_shown()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -154,7 +154,7 @@ final class CallingViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_render_then_send_join_request_to_signaling_sever()
+    func test_when_render_then_join_request_is_sent_to_signaling_server()
         async throws
     {
         let mockStore = MockMessageStore()
@@ -240,7 +240,8 @@ final class CallingViewUITests: XCTestCase {
     }
 
     @MainActor
-    func test_when_webRTC_is_connected_then_info_text_is_changed() async throws
+    func test_when_webRTC_is_connected_then_info_text_is_changed()
+        async throws
     {
         var c: AsyncStream<WSMessage>.Continuation!
         let stream = AsyncStream<WSMessage> { c = $0 }
@@ -284,7 +285,7 @@ final class CallingViewUITests: XCTestCase {
 
     @MainActor
     func
-        test_given_peers_are_connected_when_tap_leave_button_then_dismiss_and_send_leave_request()
+        test_given_peers_are_connected_when_tap_leave_button_then_calling_view_is_dismissed_and_leave_request_is_sent()
         async throws
     {
         var c: AsyncStream<WSMessage>.Continuation!
@@ -334,7 +335,7 @@ final class CallingViewUITests: XCTestCase {
 
     @MainActor
     func
-        test_when_peers_are_connected_then_timer_is_stop_and_do_not_go_back_to_enter_room_page()
+        test_when_peers_are_connected_then_timer_is_stopped_and_calling_view_is_kept()
         async throws
     {
         var c: AsyncStream<WSMessage>.Continuation!
@@ -373,7 +374,7 @@ final class CallingViewUITests: XCTestCase {
 
     @MainActor
     func
-        test_given_peers_are_connected_when_peer_left_event_is_received_then_dismiss_and_send_leave_request()
+        test_given_peers_are_connected_when_peerLeft_event_is_received_then_calling_view_is_dismissed_and_leave_request_is_sent()
         async throws
     {
         var c: AsyncStream<WSMessage>.Continuation!
