@@ -62,23 +62,23 @@ struct CallingViewModelTests {
         await sut.startCall(roomCode: "1234")
 
         mockSignalClient.continuation.yield(.connected)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .idle
         }
         mockSignalClient.continuation.yield(.joined)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .joined
         }
         mockSignalClient.continuation.yield(.joinFailed)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         mockSignalClient.continuation.yield(.peerJoined)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
         mockSignalClient.continuation.yield(.peerLeft)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
     }
@@ -117,7 +117,7 @@ struct CallingViewModelTests {
 
         mockSignalClient.continuation.yield(.peerJoined)
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -136,7 +136,7 @@ struct CallingViewModelTests {
 
         mockSignalClient.continuation.yield(.peerJoined)
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -154,7 +154,7 @@ struct CallingViewModelTests {
 
         mockSignalClient.continuation.yield(.peerJoined)
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -174,7 +174,7 @@ struct CallingViewModelTests {
             .offer("offer session document payload")
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -199,7 +199,7 @@ struct CallingViewModelTests {
             .offer("offer session document payload")
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -223,7 +223,7 @@ struct CallingViewModelTests {
             .offer("offer session document payload")
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -245,7 +245,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(
             .peerJoined
         )
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -253,7 +253,7 @@ struct CallingViewModelTests {
             .answer("answer session document payload")
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             mockWebRTCClient.setRemoteAnswerCalled == 1
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -280,7 +280,7 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(
             .peerJoined
         )
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -288,7 +288,7 @@ struct CallingViewModelTests {
             .answer("answer session document payload")
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -311,7 +311,7 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -325,7 +325,7 @@ struct CallingViewModelTests {
             )
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             mockWebRTCClient.addCandidateCalled == 1
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -350,7 +350,7 @@ struct CallingViewModelTests {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
         mockWebRTCClient.addCandidateError = .sample
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -364,7 +364,7 @@ struct CallingViewModelTests {
             )
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -389,10 +389,10 @@ struct CallingViewModelTests {
 
         mockSignalClient.continuation.yield(.offer("session document payload"))
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             mockWebRTCClient.addCandidateCalled == 1
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -428,10 +428,10 @@ struct CallingViewModelTests {
         mockSignalClient.continuation.yield(.offer("session document payload"))
         mockSignalClient.continuation.yield(.offer("session document payload"))
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             mockWebRTCClient.acceptOfferCalled == 2
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -455,7 +455,7 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -469,7 +469,7 @@ struct CallingViewModelTests {
             )
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             mockSignalClient.sendCandidateCallTimes == 1
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -492,7 +492,7 @@ struct CallingViewModelTests {
         mockSignalClient.sendCandidateError = .sample
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -506,7 +506,7 @@ struct CallingViewModelTests {
             )
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(sut.callStatus == .disconnected)
@@ -529,7 +529,7 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -543,7 +543,7 @@ struct CallingViewModelTests {
             )
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             mockSignalClient.sendCandidateCallTimes == 1
         }
         #expect(mockAudioSessionManager.activateCallTimes == 1)
@@ -566,7 +566,7 @@ struct CallingViewModelTests {
         mockSignalClient.sendCandidateError = .sample
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -580,7 +580,7 @@ struct CallingViewModelTests {
             )
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .disconnected
         }
         #expect(sut.callStatus == .disconnected)
@@ -603,7 +603,7 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.peerJoined)
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -611,7 +611,7 @@ struct CallingViewModelTests {
             .connected
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .connected
         }
     }
@@ -623,7 +623,7 @@ struct CallingViewModelTests {
     {
         await sut.startCall(roomCode: "1234")
         mockSignalClient.continuation.yield(.offer("session document payload"))
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .negotiating
         }
 
@@ -631,7 +631,7 @@ struct CallingViewModelTests {
             .connected
         )
 
-        try await waitFor(timeout: Duration.seconds(5)) {
+        try await waitFor {
             sut.callStatus == .connected
         }
     }
@@ -644,13 +644,13 @@ struct CallingViewModelTests {
         for tc in [WebRTCEvent.disconnected, WebRTCEvent.failed] {
             await sut.startCall(roomCode: "1234")
             mockSignalClient.continuation.yield(.peerJoined)
-            try await waitFor(timeout: Duration.seconds(5)) {
+            try await waitFor {
                 sut.callStatus == .negotiating
             }
 
             mockWebRTCClient.continuation.yield(tc)
 
-            try await waitFor(timeout: Duration.seconds(5)) {
+            try await waitFor {
                 sut.callStatus == .disconnected
             }
         }
@@ -666,13 +666,13 @@ struct CallingViewModelTests {
             mockSignalClient.continuation.yield(
                 .offer("session document payload")
             )
-            try await waitFor(timeout: Duration.seconds(5)) {
+            try await waitFor {
                 sut.callStatus == .negotiating
             }
 
             mockWebRTCClient.continuation.yield(tc)
 
-            try await waitFor(timeout: Duration.seconds(5)) {
+            try await waitFor {
                 sut.callStatus == .disconnected
             }
         }

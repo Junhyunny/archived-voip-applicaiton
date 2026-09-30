@@ -68,7 +68,7 @@ struct SignalClientTests {
 
             try await sut.join(roomCode: "1234")
 
-            try await waitFor(timeout: Duration.seconds(5)) {
+            try await waitFor {
                 await mockStore.messages.count == 1
             }
             let parsedMessages = try parseMessage(

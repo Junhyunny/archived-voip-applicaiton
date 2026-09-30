@@ -6,7 +6,7 @@
 //
 
 func waitFor(
-    timeout: Duration = .seconds(1),
+    timeout: Duration = .seconds(5),
     condition: @escaping () async -> Bool
 ) async throws {
     let clock = ContinuousClock()

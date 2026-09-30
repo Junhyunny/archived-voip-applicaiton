@@ -101,7 +101,7 @@ final class CallingViewUITests: XCTestCase {
 
             app.buttons["cancel_button"].tap()
 
-            try await waitFor(timeout: .seconds(5)) {
+            try await waitFor {
                 return await mockStore.messages.count >= 1
             }
             let parsedMessages = try parseMessage(
@@ -168,7 +168,7 @@ final class CallingViewUITests: XCTestCase {
         ) { port in
             navigateToCallingView(port: port)
 
-            try await waitFor(timeout: .seconds(5)) {
+            try await waitFor {
                 await mockStore.messages.count == 1
             }
             let parsedMessages = try parseMessage(
@@ -194,7 +194,7 @@ final class CallingViewUITests: XCTestCase {
             )
         ) { port in
             navigateToCallingView(port: port)
-            try await waitFor(timeout: .seconds(5)) {
+            try await waitFor {
                 await mockStore.messages.count == 1
             }
 
@@ -315,7 +315,7 @@ final class CallingViewUITests: XCTestCase {
 
             app.buttons["leave_call"].tap()
 
-            try await waitFor(timeout: .seconds(5)) {
+            try await waitFor {
                 return await mockStore.messages.count >= 1
             }
             let parsedMessages = try parseMessage(
@@ -412,7 +412,7 @@ final class CallingViewUITests: XCTestCase {
                 )
             )
 
-            try await waitFor(timeout: .seconds(5)) {
+            try await waitFor {
                 return await mockStore.messages.count >= 1
             }
             let parsedMessages = try parseMessage(
