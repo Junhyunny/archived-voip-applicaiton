@@ -22,15 +22,18 @@ class MainActivityTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
+    val buttonRole = SemanticsMatcher.expectValue(
+        SemanticsProperties.Role, Role.Button
+    )
 
     @Test
-    fun when_render_then_see_text_information() {
+    fun when_render_then_heading_and_description_are_shown() {
         composeTestRule.onNodeWithText("방코드").assertIsDisplayed()
         composeTestRule.onNodeWithText("두 기기에 같은 코드를 입력하세요").assertIsDisplayed()
     }
 
     @Test
-    fun when_render_then_see_entered_room_code_field_for_4_digits() {
+    fun when_render_then_room_code_input_fields_for_4_digits_are_shown() {
         composeTestRule.onNodeWithTag("room_code_digit_0").assertExists().assertTextEquals("")
         composeTestRule.onNodeWithTag("room_code_digit_1").assertExists().assertTextEquals("")
         composeTestRule.onNodeWithTag("room_code_digit_2").assertExists().assertTextEquals("")
@@ -38,10 +41,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun when_render_then_see_keypad() {
-        val buttonRole = SemanticsMatcher.expectValue(
-            SemanticsProperties.Role, Role.Button
-        )
+    fun when_render_then_number_keypad_is_shown() {
         val keypad = hasAnyAncestor(hasTestTag("keypad"))
         for (index in 0..9) {
             val numberInKeypad = hasText("$index") and buttonRole and keypad
@@ -52,24 +52,31 @@ class MainActivityTest {
     }
 
     @Test
-    fun when_render_then_see_call_start_button() {
-        val buttonRole = SemanticsMatcher.expectValue(
-            SemanticsProperties.Role, Role.Button
-        )
-
+    fun when_render_then_call_start_button_is_shown_and_disabled() {
         val callStartButton = composeTestRule.onNode(hasText("통화 시작") and buttonRole)
         callStartButton.isDisplayed()
         callStartButton.assertIsNotEnabled()
     }
 
     @Test
-    fun given_render_when_click_4_digits_then_call_start_button_is_enabled() {
-        val buttonRole = SemanticsMatcher.expectValue(
-            SemanticsProperties.Role, Role.Button
-        )
+    fun given_render_when_press_4_digits_then_call_start_button_is_enabled() {
         val keypad = hasAnyAncestor(hasTestTag("keypad"))
-        val tc = listOf("1", "2", "3", "4")
-        for (buttonNumber in tc) {
+        val numbers = listOf("1", "2", "3", "4")
+        for (buttonNumber in numbers) {
+            composeTestRule.onNode(
+                hasText(buttonNumber) and buttonRole and keypad
+            ).performClick()
+        }
+
+        val callStartButton = composeTestRule.onNode(hasText("통화 시작") and buttonRole)
+        callStartButton.assertIsEnabled()
+    }
+
+    @Test
+    fun given_render_when_press_more_than_4_digits_then_call_start_button_is_enabled() {
+        val keypad = hasAnyAncestor(hasTestTag("keypad"))
+        val numbers = listOf("1", "2", "3", "4", "5")
+        for (buttonNumber in numbers) {
             composeTestRule.onNode(
                 hasText(buttonNumber) and buttonRole and keypad
             ).performClick()

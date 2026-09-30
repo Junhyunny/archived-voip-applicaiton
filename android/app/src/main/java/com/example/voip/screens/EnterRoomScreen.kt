@@ -16,10 +16,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.example.voip.components.Keypad
+import com.example.voip.components.NumberKey
 
 @Composable
 fun EnterRoomScreen() {
     var roomCode by remember { mutableStateOf("") }
+
+    val onKeyPress = { key: NumberKey ->
+        when (key) {
+            NumberKey.Delete -> {
+                if (roomCode.isNotEmpty()) {
+                    roomCode = roomCode.substring(0, roomCode.length - 1)
+                }
+            }
+
+            else -> {
+                if (roomCode.length < 4) {
+                    roomCode += key.label
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -39,7 +56,7 @@ fun EnterRoomScreen() {
                 )
             }
         }
-        Keypad(onKeyPress = { roomCode += it.label })
+        Keypad(onKeyPress = onKeyPress)
         Button(
             onClick = {},
             enabled = roomCode.length == 4,

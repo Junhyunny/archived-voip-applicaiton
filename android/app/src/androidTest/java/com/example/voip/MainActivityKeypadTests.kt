@@ -22,38 +22,78 @@ class MainActivityKeypadTests(
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+    val buttonRole = SemanticsMatcher.expectValue(
+        SemanticsProperties.Role, Role.Button
+    )
+
     @Test
-    fun given_render_when_click_4_digits_then_see_4_digits_in_digit_section() {
-        val buttonRole = SemanticsMatcher.expectValue(
-            SemanticsProperties.Role, Role.Button
-        )
+    fun given_render_when_click_4_digits_then_4_digits_are_shown_in_digit_section() {
         val keypad = hasAnyAncestor(hasTestTag("keypad"))
         for (buttonNumber in tc) {
             composeTestRule.onNode(
                 hasText(buttonNumber) and buttonRole and keypad
             ).performClick()
         }
-        composeTestRule.onNodeWithTag("room_code_digit_0")
-            .assertExists()
-            .assertTextEquals(tc[0])
-        composeTestRule.onNodeWithTag("room_code_digit_1")
-            .assertExists()
-            .assertTextEquals(tc[1])
-        composeTestRule.onNodeWithTag("room_code_digit_2")
-            .assertExists()
-            .assertTextEquals(tc[2])
+
+        for (index in 0..<4) {
+            composeTestRule.onNodeWithTag("room_code_digit_$index")
+                .assertExists()
+                .assertTextEquals(tc[index])
+        }
+    }
+
+    @Test
+    fun given_press_digits_when_press_delete_then_last_digit_is_deleted() {
+        val keypad = hasAnyAncestor(hasTestTag("keypad"))
+        for (buttonNumber in tc) {
+            composeTestRule.onNode(
+                hasText(buttonNumber) and buttonRole and keypad
+            ).performClick()
+        }
+
+        composeTestRule.onNode(
+            hasText("delete") and buttonRole and keypad
+        ).performClick()
+
+        for (index in 0..<3) {
+            composeTestRule.onNodeWithTag("room_code_digit_$index")
+                .assertExists()
+                .assertTextEquals(tc[index])
+        }
         composeTestRule.onNodeWithTag("room_code_digit_3")
             .assertExists()
-            .assertTextEquals(tc[3])
+            .assertTextEquals("")
+    }
+
+    @Test
+    fun given_press_digits_when_press_delete_more_than_input_then_all_digits_are_deleted() {
+        val keypad = hasAnyAncestor(hasTestTag("keypad"))
+        for (buttonNumber in tc) {
+            composeTestRule.onNode(
+                hasText(buttonNumber) and buttonRole and keypad
+            ).performClick()
+        }
+
+        repeat(5) {
+            composeTestRule.onNode(
+                hasText("delete") and buttonRole and keypad
+            ).performClick()
+        }
+
+        for (index in 0..<4) {
+            composeTestRule.onNodeWithTag("room_code_digit_$index")
+                .assertExists()
+                .assertTextEquals("")
+        }
     }
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters(name = "input={0}")
+        @Parameterized.Parameters(name = "{index}")
         fun data() = listOf(
-            arrayOf(listOf("1", "2", "3", "4")),
-            arrayOf(listOf("5", "6", "7", "8")),
-            arrayOf(listOf("9", "0", "3", "4")),
+            listOf("1", "2", "3", "4"),
+            listOf("5", "6", "7", "8"),
+            listOf("9", "0", "3", "4"),
         )
     }
 }
