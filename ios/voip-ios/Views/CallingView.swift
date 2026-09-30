@@ -28,13 +28,6 @@ struct CallingView: View {
         )
     }
 
-    private func back() {
-        Task {
-            await vm.close()
-            dismiss()
-        }
-    }
-
     private func checkIcon(isChecked: Bool, identifier: String) -> some View {
         Image(systemName: isChecked ? "checkmark.square.fill" : "square")
             .accessibilityIdentifier(identifier)
@@ -93,7 +86,7 @@ struct CallingView: View {
                     Text("자막은 표시하지 않습니다. 통화가 끝나면 요약이 만들어집니다.")
                 }
                 Button(action: {
-                    back()
+                    dismiss()
                 }) {
                     Text("통화 종료")
                 }
@@ -107,7 +100,7 @@ struct CallingView: View {
                 checkList
                 Text("\(timer.time)초 후 자동 종료")
                 Button("취소") {
-                    back()
+                    dismiss()
                 }
                 .accessibilityIdentifier("cancel_button")
             }
@@ -116,6 +109,7 @@ struct CallingView: View {
 
     var body: some View {
         mainSection
+            .navigationBarBackButtonHidden(true)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("calling_view")
             .task {
@@ -128,14 +122,19 @@ struct CallingView: View {
                 case .connected:
                     timer.stop()
                 case .disconnected:
-                    back()
+                    dismiss()
                 default:
                     break
                 }
             }
             .onChange(of: timer.time) { _, new in
                 if new == 0 {
-                    back()
+                    dismiss()
+                }
+            }
+            .onDisappear {
+                Task {
+                    await vm.close()
                 }
             }
     }
