@@ -19,10 +19,16 @@ fun CallScreen(
     viewModel: CallViewModel,
     roomCode: String,
     durationMillis: Long,
+    onCountdownFinished: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.startTimer(durationMillis)
+    }
+    LaunchedEffect(uiState.isCountdownFinished) {
+        if (uiState.isCountdownFinished) {
+            onCountdownFinished()
+        }
     }
     CallScreenContent(roomCode, uiState)
 }

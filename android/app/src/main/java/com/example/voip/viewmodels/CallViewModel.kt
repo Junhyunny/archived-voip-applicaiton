@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
 data class CallUiState(
-    val remainSeconds: Long = 0L
+    val remainSeconds: Long = 0L,
+    val isCountdownFinished: Boolean = false
 )
 
 class CallViewModel(
@@ -27,7 +28,7 @@ class CallViewModel(
     private var timerJob: Job? = null
 
     fun startTimer(durationMillis: Long) {
-        if(timerJob?.isActive == true) {
+        if (timerJob?.isActive == true) {
             return
         }
         timerJob = viewModelScope.launch {
@@ -35,7 +36,8 @@ class CallViewModel(
                 .collect { remainTime ->
                     _uiState.update { current ->
                         current.copy(
-                            remainSeconds = ceil(remainTime / 1_000.0).toLong()
+                            remainSeconds = ceil(remainTime / 1_000.0).toLong(),
+                            isCountdownFinished = remainTime == 0L
                         )
                     }
                 }

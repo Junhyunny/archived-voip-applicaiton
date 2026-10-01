@@ -6,32 +6,13 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.voip.utils.CountdownTicker
+import com.example.voip.mocks.FakeCountdownTicker
 import com.example.voip.viewmodels.CallUiState
 import com.example.voip.viewmodels.CallViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Rule
 import org.junit.Test
-
-class FakeCountdownTicker : CountdownTicker {
-
-    private val _flow =
-        MutableStateFlow(0L)
-
-    override fun start(
-        durationMillis: Long
-    ): Flow<Long> {
-        _flow.value = durationMillis
-        return _flow
-    }
-
-    fun emit(
-        remainTime: Long
-    ) {
-        _flow.value = remainTime
-    }
-}
 
 class CallScreenTest {
     @get:Rule
@@ -61,7 +42,7 @@ class CallScreenTest {
     fun when_render_then_count_down_is_started() {
         val timer = FakeCountdownTicker()
         composeTestRule.setContent {
-            CallScreen(viewModel { CallViewModel(timer) }, "1234", 6_000L)
+            CallScreen(viewModel { CallViewModel(timer) }, "1234", 6_000L, {})
         }
         composeTestRule.waitForIdle()
 
@@ -72,5 +53,26 @@ class CallScreenTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNode(hasText("5초 후 자동 종료")).assertExists()
+    }
+
+    @Test
+    fun when_countdown_is_finished_then_onCountdownFinished_is_called() {
+        val spyOnCountdownFinished = mockk<() -> Unit>(relaxed = true)
+        val timer = FakeCountdownTicker()
+        composeTestRule.setContent {
+            CallScreen(
+                viewModel { CallViewModel(timer) },
+                "1234",
+                1_000L,
+                spyOnCountdownFinished
+            )
+        }
+        composeTestRule.waitForIdle()
+
+        timer.emit(0L)
+
+        composeTestRule.waitForIdle()
+
+        verify(exactly = 1) { spyOnCountdownFinished() }
     }
 }

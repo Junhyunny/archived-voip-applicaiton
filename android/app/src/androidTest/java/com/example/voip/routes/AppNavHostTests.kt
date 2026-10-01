@@ -1,5 +1,6 @@
 package com.example.voip.routes
 
+import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -12,7 +13,8 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import junit.framework.TestCase
+import com.example.voip.mocks.TestAppContainer
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,6 +27,7 @@ class AppNavHostTests {
     val composeTestRule = createComposeRule()
 
     private lateinit var navController: TestNavHostController
+    private lateinit var testAppContainer: TestAppContainer
 
     val buttonRole = SemanticsMatcher.expectValue(
         SemanticsProperties.Role, Role.Button
@@ -33,16 +36,17 @@ class AppNavHostTests {
     @Before
     fun setup() {
         composeTestRule.setContent {
+            testAppContainer = TestAppContainer()
             navController = TestNavHostController(LocalContext.current).apply {
                 navigatorProvider.addNavigator(ComposeNavigator())
             }
-            AppNavHost(navController = navController)
+            AppNavHost(navController = navController, appContainer = testAppContainer)
         }
     }
 
     @Test
     fun when_render_then_default_route_is_enter_room_screen() {
-        TestCase.assertTrue(navController.currentDestination?.hasRoute<EnterRoomRoute>() == true)
+        assertTrue(navController.currentDestination?.hasRoute<EnterRoomRoute>() == true)
     }
 
     @Test
@@ -54,12 +58,29 @@ class AppNavHostTests {
 
         composeTestRule.onNodeWithText("통화 시작").performClick()
 
-        TestCase.assertTrue(navController.currentDestination?.hasRoute<CallRoute>() == true)
+        assertTrue(navController.currentDestination?.hasRoute<CallRoute>() == true)
         composeTestRule.onNode(hasText("1234")).assertExists()
     }
 
     @Test
     fun given_call_screen_is_shown_when_count_down_is_finished_then_screen_is_back_to_enter_room_screen() {
+        composeTestRule.onNode(hasText("1") and buttonRole).performClick()
+        composeTestRule.onNode(hasText("2") and buttonRole).performClick()
+        composeTestRule.onNode(hasText("3") and buttonRole).performClick()
+        composeTestRule.onNode(hasText("4") and buttonRole).performClick()
+        composeTestRule.onNodeWithText("통화 시작").performClick()
+        assertTrue(navController.currentDestination?.hasRoute<CallRoute>() == true)
 
+        composeTestRule.waitUntil {
+            testAppContainer.countdownTicker
+                .subscriptionCount.value == 1
+        }
+
+        testAppContainer.countdownTicker.emit(0L)
+
+        composeTestRule.waitUntil(timeoutMillis = 1_000L) {
+            navController.currentDestination
+                ?.hasRoute<EnterRoomRoute>() == true
+        }
     }
 }

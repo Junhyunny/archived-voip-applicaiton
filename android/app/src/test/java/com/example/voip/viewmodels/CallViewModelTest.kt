@@ -1,62 +1,18 @@
 package com.example.voip.viewmodels
 
+import com.example.voip.mocks.FakeCountdownTicker
+import com.example.voip.mocks.MainDispatcherRule
 import com.example.voip.mocks.TestMonotonicClock
-import com.example.voip.utils.CountdownTicker
 import com.example.voip.utils.CountdownTickerImpl
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class MainDispatcherRule(
-    val testDispatcher: TestDispatcher = StandardTestDispatcher(),
-) : TestWatcher() {
-
-    override fun starting(description: Description) {
-        Dispatchers.setMain(
-            testDispatcher
-        )
-    }
-
-    override fun finished(description: Description) {
-        Dispatchers.resetMain()
-    }
-}
-
-class FakeCountdownTicker : CountdownTicker {
-
-    private val flows =
-        mutableListOf<MutableSharedFlow<Long>>()
-
-    override fun start(
-        durationMillis: Long
-    ): Flow<Long> {
-        return MutableSharedFlow<Long>().also {
-            flows += it
-        }
-    }
-
-    fun flow(index: Int): MutableSharedFlow<Long>? {
-        if (flows.count() <= index) {
-            return null
-        }
-        return flows[index]
-    }
-}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CallViewModelTest {
@@ -130,8 +86,8 @@ class CallViewModelTest {
             sut.startTimer(3_000L)
             runCurrent()
 
-            val firstTimer = timer.flow(0)
-            firstTimer?.emit(3_000L)
+            val firstTimer = timer.flow(0)!!
+            firstTimer.emit(3_000L)
             runCurrent()
 
             assertEquals(
@@ -142,7 +98,6 @@ class CallViewModelTest {
             sut.startTimer(10_000L)
             runCurrent()
 
-            val secondTimer = timer.flow(1)
-            assertEquals(secondTimer, null)
+            assertEquals(1, timer.startCount)
         }
 }

@@ -5,10 +5,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.voip.AppContainer
 import com.example.voip.screens.CallScreen
 import com.example.voip.screens.EnterRoomScreen
-import com.example.voip.utils.AndroidMonotonicClock
-import com.example.voip.utils.CountdownTickerImpl
 import com.example.voip.viewmodels.CallViewModel
 
 fun NavController.moveToCallScreen(roomCode: String) {
@@ -23,14 +22,18 @@ fun NavGraphBuilder.enterRoomScreen(
     }
 }
 
-fun NavGraphBuilder.callScreen() {
+fun NavGraphBuilder.callScreen(
+    appContainer: AppContainer,
+    onTimerFinished: () -> Unit
+) {
     composable<CallRoute> { entry ->
         val route = entry.toRoute<CallRoute>()
         val roomCode = route.roomCode
         CallScreen(
-            viewModel { CallViewModel(CountdownTickerImpl(AndroidMonotonicClock)) },
+            viewModel { CallViewModel(appContainer.countdownTicker) },
             roomCode = roomCode,
-            durationMillis = 60_000L
+            durationMillis = 60_000L,
+            onCountdownFinished = onTimerFinished
         )
     }
 }
