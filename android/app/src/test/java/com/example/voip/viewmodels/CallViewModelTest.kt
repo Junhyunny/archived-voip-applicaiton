@@ -50,7 +50,10 @@ class FakeCountdownTicker : CountdownTicker {
         }
     }
 
-    fun flow(index: Int): MutableSharedFlow<Long> {
+    fun flow(index: Int): MutableSharedFlow<Long>? {
+        if (flows.count() <= index) {
+            return null
+        }
         return flows[index]
     }
 }
@@ -119,7 +122,7 @@ class CallViewModelTest {
         }
 
     @Test
-    fun when_timer_is_started_two_times_then_previous_timer_is_cancelled() =
+    fun when_timer_is_started_two_times_then_new_timer_is_not_started() =
         runTest(mainDispatcherRule.testDispatcher) {
             val timer = FakeCountdownTicker()
             val sut = CallViewModel(timer)
@@ -128,7 +131,7 @@ class CallViewModelTest {
             runCurrent()
 
             val firstTimer = timer.flow(0)
-            firstTimer.emit(3_000L)
+            firstTimer?.emit(3_000L)
             runCurrent()
 
             assertEquals(
@@ -140,28 +143,6 @@ class CallViewModelTest {
             runCurrent()
 
             val secondTimer = timer.flow(1)
-            secondTimer.emit(10_000L)
-            runCurrent()
-
-            assertEquals(
-                10L,
-                sut.uiState.value.remainSeconds
-            )
-
-            firstTimer.emit(1_000L)
-            runCurrent()
-
-            assertEquals(
-                10L,
-                sut.uiState.value.remainSeconds
-            )
-
-            secondTimer.emit(9_000L)
-            runCurrent()
-
-            assertEquals(
-                9L,
-                sut.uiState.value.remainSeconds
-            )
+            assertEquals(secondTimer, null)
         }
 }

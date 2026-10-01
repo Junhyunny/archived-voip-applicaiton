@@ -27,7 +27,9 @@ class CallViewModel(
     private var timerJob: Job? = null
 
     fun startTimer(durationMillis: Long) {
-        timerJob?.cancel()
+        if(timerJob?.isActive == true) {
+            return
+        }
         timerJob = viewModelScope.launch {
             countdownTicker.start(durationMillis)
                 .collect { remainTime ->

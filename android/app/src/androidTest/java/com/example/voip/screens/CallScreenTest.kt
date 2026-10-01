@@ -11,7 +11,6 @@ import com.example.voip.viewmodels.CallUiState
 import com.example.voip.viewmodels.CallViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 
@@ -68,9 +67,7 @@ class CallScreenTest {
 
         composeTestRule.onNode(hasText("6초 후 자동 종료")).assertExists()
 
-        runBlocking {
-            timer.emit(5_000L)
-        }
+        timer.emit(5_000L)
 
         composeTestRule.waitForIdle()
 
