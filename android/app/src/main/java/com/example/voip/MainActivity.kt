@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val appContainer = DefaultAppContainer()
+        val appContainer = (application as VoipApplication).appContainer
         setContent {
             VoipandroidTheme {
                 AppNavHost(appContainer = appContainer)

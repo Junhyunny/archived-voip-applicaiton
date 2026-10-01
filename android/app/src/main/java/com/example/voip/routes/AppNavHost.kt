@@ -9,8 +9,8 @@ import com.example.voip.AppContainer
 
 @Composable
 fun AppNavHost(
+    appContainer: AppContainer,
     navController: NavHostController = rememberNavController(),
-    appContainer: AppContainer
 ) {
     NavHost(
         navController = navController,
@@ -22,7 +22,7 @@ fun AppNavHost(
         )
         callScreen(
             appContainer = appContainer,
-            onTimerFinished = { navController.popBackStack() }
+            onTimerFinished = { navController.popBackStack<CallRoute>(inclusive = true) }
         )
     }
 }

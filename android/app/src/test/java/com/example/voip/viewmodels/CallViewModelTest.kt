@@ -90,6 +90,9 @@ class CallViewModelTest {
             val timer = CountdownTickerImpl(testClock)
             val sut = CallViewModel(countdownTicker = timer)
             sut.startTimer(durationMillis = 3_000L)
+            assertFalse(
+                sut.uiState.value.isCountdownFinished
+            )
 
             advanceTimeBy(1_000L.milliseconds)
             runCurrent()
