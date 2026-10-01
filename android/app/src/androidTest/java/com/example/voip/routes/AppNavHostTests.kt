@@ -1,6 +1,5 @@
 package com.example.voip.routes
 
-import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -35,8 +34,8 @@ class AppNavHostTests {
 
     @Before
     fun setup() {
+        testAppContainer = TestAppContainer()
         composeTestRule.setContent {
-            testAppContainer = TestAppContainer()
             navController = TestNavHostController(LocalContext.current).apply {
                 navigatorProvider.addNavigator(ComposeNavigator())
             }

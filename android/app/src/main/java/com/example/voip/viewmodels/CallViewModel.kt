@@ -31,6 +31,12 @@ class CallViewModel(
         if (timerJob?.isActive == true) {
             return
         }
+        _uiState.update { current ->
+            current.copy(
+                remainSeconds = ceil(durationMillis / 1_000.0).toLong(),
+                isCountdownFinished = false
+            )
+        }
         timerJob = viewModelScope.launch {
             countdownTicker.start(durationMillis)
                 .collect { remainTime ->

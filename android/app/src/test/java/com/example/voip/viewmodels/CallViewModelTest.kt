@@ -9,6 +9,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import kotlin.time.Duration.Companion.milliseconds
@@ -21,7 +23,7 @@ class CallViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun when_start_timer_then_remain_time_ui_state_is_duration_time() = runTest(
+    fun when_start_timer_then_remain_time_is_duration_time() = runTest(
         mainDispatcherRule.testDispatcher
     ) {
         val testClock = TestMonotonicClock(
@@ -41,7 +43,7 @@ class CallViewModelTest {
     }
 
     @Test
-    fun given_timer_is_started_when_one_second_is_passed_then_remain_time_ui_state_is_down_by_one_second() =
+    fun given_timer_is_started_when_one_second_is_passed_then_remain_time_is_down_by_one_second() =
         runTest(
             mainDispatcherRule.testDispatcher
         ) {
@@ -78,6 +80,40 @@ class CallViewModelTest {
         }
 
     @Test
+    fun given_timer_is_started_when_one_second_is_passed_then_isCountdownFinished_flag_becomes_true() =
+        runTest(
+            mainDispatcherRule.testDispatcher
+        ) {
+            val testClock = TestMonotonicClock(
+                testScheduler
+            )
+            val timer = CountdownTickerImpl(testClock)
+            val sut = CallViewModel(countdownTicker = timer)
+            sut.startTimer(durationMillis = 3_000L)
+
+            advanceTimeBy(1_000L.milliseconds)
+            runCurrent()
+
+            assertFalse(
+                sut.uiState.value.isCountdownFinished
+            )
+
+            advanceTimeBy(1_000L.milliseconds)
+            runCurrent()
+
+            assertFalse(
+                sut.uiState.value.isCountdownFinished
+            )
+
+            advanceTimeBy(1_000L.milliseconds)
+            runCurrent()
+
+            assertTrue(
+                sut.uiState.value.isCountdownFinished
+            )
+        }
+
+    @Test
     fun when_timer_is_started_two_times_then_new_timer_is_not_started() =
         runTest(mainDispatcherRule.testDispatcher) {
             val timer = FakeCountdownTicker()
@@ -86,7 +122,7 @@ class CallViewModelTest {
             sut.startTimer(3_000L)
             runCurrent()
 
-            val firstTimer = timer.flow(0)!!
+            val firstTimer = timer.flow(0)
             firstTimer.emit(3_000L)
             runCurrent()
 
