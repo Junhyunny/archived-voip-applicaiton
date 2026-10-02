@@ -2,6 +2,9 @@ package com.example.voip.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.voip.clients.SignalClient
+import com.example.voip.types.CallStatus
+import com.example.voip.types.SignalEvent
 import com.example.voip.utils.CountdownTicker
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,11 +16,13 @@ import kotlin.math.ceil
 
 data class CallUiState(
     val remainSeconds: Long = 0L,
-    val isCountdownFinished: Boolean = false
+    val isCountdownFinished: Boolean = false,
+    val callStatus: CallStatus = CallStatus.UNCONNECTED
 )
 
 class CallViewModel(
-    val countdownTicker: CountdownTicker
+    val countdownTicker: CountdownTicker,
+    val signalClient: SignalClient
 ) : ViewModel() {
     private val _uiState =
         MutableStateFlow(CallUiState())
@@ -26,6 +31,7 @@ class CallViewModel(
         _uiState.asStateFlow()
 
     private var timerJob: Job? = null
+    private var callJob: Job? = null
 
     fun startTimer(durationMillis: Long) {
         if (timerJob?.isActive == true) {
@@ -47,6 +53,44 @@ class CallViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    fun startCall(roomCode: String) {
+        if (callJob != null) {
+            return
+        }
+        callJob = viewModelScope.launch {
+            try {
+                signalClient.connect()
+                signalClient.join(roomCode)
+            } catch (_: Exception) {
+                _uiState.update { current ->
+                    current.copy(
+                        callStatus = CallStatus.DISCONNECTED
+                    )
+                }
+            }
+            signalClient.events.collect { event ->
+                handleSignalEvent(event)
+            }
+        }
+    }
+
+    private fun updateCallStatus(status: CallStatus) {
+        _uiState.update { current -> current.copy(callStatus = status) }
+    }
+
+    private fun handleSignalEvent(event: SignalEvent) {
+        when (event) {
+            SignalEvent.Connected -> updateCallStatus(CallStatus.IDLE)
+            SignalEvent.Joined -> updateCallStatus(CallStatus.JOINED)
+            SignalEvent.PeerJoined -> updateCallStatus(CallStatus.NEGOTIATING)
+            SignalEvent.Offer -> updateCallStatus(CallStatus.NEGOTIATING)
+            SignalEvent.JoinFailed,
+            SignalEvent.PeerJoined,
+            SignalEvent.Disconnected -> updateCallStatus(CallStatus.DISCONNECTED)
+            else -> print("nothing")
         }
     }
 }
