@@ -88,9 +88,9 @@ class CallViewModel(
             SignalEvent.PeerJoined -> updateCallStatus(CallStatus.NEGOTIATING)
             SignalEvent.Offer -> updateCallStatus(CallStatus.NEGOTIATING)
             SignalEvent.JoinFailed,
-            SignalEvent.PeerJoined,
             SignalEvent.Disconnected -> updateCallStatus(CallStatus.DISCONNECTED)
-            else -> print("nothing")
+
+            else -> print("TODO it will be deleted when all status handling is implemented")
         }
     }
 }

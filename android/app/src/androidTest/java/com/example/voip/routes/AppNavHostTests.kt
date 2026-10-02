@@ -71,11 +71,10 @@ class AppNavHostTests {
         assertTrue(navController.currentDestination?.hasRoute<CallRoute>() == true)
 
         composeTestRule.waitUntil {
-            testAppContainer.countdownTicker
-                .subscriptionCount.value == 1
+            testAppContainer.countdownTicker.subscriptionCount.value == 1
         }
 
-        testAppContainer.countdownTicker.emit(0L)
+        testAppContainer.countdownTicker.emit(0)
 
         composeTestRule.waitUntil(timeoutMillis = 1_000L) {
             navController.currentDestination

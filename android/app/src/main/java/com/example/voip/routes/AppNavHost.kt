@@ -22,7 +22,7 @@ fun AppNavHost(
         )
         callScreen(
             appContainer = appContainer,
-            onTimerFinished = { navController.popBackStack<CallRoute>(inclusive = true) }
+            moveBack = { navController.popBackStack<CallRoute>(inclusive = true) }
         )
     }
 }

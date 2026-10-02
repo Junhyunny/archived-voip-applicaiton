@@ -16,7 +16,6 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -34,13 +33,11 @@ class CallViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
-    lateinit var testClock: TestMonotonicClock
     lateinit var fakeCountdownTicker: FakeCountdownTicker
     lateinit var mockSignalClient: SignalClient
 
     @Before
     fun setup() {
-        testClock = TestMonotonicClock(TestCoroutineScheduler())
         fakeCountdownTicker = FakeCountdownTicker()
         mockSignalClient = mockk(relaxed = true)
     }
