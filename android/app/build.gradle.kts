@@ -16,11 +16,13 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+        }
         release {
             optimization {
                 enable = false
@@ -33,6 +35,31 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("local") {
+            dimension = "environment"
+            applicationIdSuffix = ".local"
+            isDefault = true
+            buildConfigField(
+                "String",
+                "WEB_SOCKET_BASE_URL",
+                "\"ws://10.0.2.2:8080/\""
+            )
+        }
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            buildConfigField(
+                "String",
+                "WEB_SOCKET_BASE_URL",
+                "\"ws://192.168.0.4:8080/\""
+            )
+        }
     }
 }
 
