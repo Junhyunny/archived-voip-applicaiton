@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.performClick
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.voip.clients.SignalClient
 import com.example.voip.mocks.FakeCountdownTicker
@@ -162,5 +163,26 @@ class CallScreenTest {
         composeTestRule.waitForIdle()
 
         verify(exactly = 1) { spyMoveBack() }
+    }
+
+    @Test
+    fun when_click_cancel_call_button_then_signal_client_is_closed_and_move_back_is_called() {
+        val spyMoveBack = mockk<() -> Unit>(relaxed = true)
+        composeTestRule.setContent {
+            CallScreen(
+                viewModel { CallViewModel(FakeCountdownTicker(), mockSignalClient) },
+                "1234",
+                60_000L,
+                spyMoveBack
+            )
+        }
+
+        composeTestRule
+            .onNode(hasText("취소") and buttonRole)
+            .performClick()
+        composeTestRule.waitForIdle()
+
+        verify(exactly = 1) { spyMoveBack() }
+        verify(exactly = 1) { mockSignalClient.close() }
     }
 }

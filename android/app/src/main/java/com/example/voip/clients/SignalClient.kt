@@ -22,6 +22,7 @@ interface SignalClient {
     val events: Flow<SignalEvent>
     suspend fun connect()
     fun join(roomCode: String)
+    fun close()
 }
 
 class SignalClientImpl(
@@ -72,5 +73,9 @@ class SignalClientImpl(
             )
         )
         webSocket?.send(text)
+    }
+
+    override fun close() {
+        TODO("Not yet implemented")
     }
 }

@@ -31,29 +31,25 @@ fun CallScreen(
         viewModel.startTimer(durationMillis)
         viewModel.startCall(roomCode)
     }
-    LaunchedEffect(uiState.isCountdownFinished) {
-        if (uiState.isCountdownFinished) {
+    val isEnded = uiState.isCountdownFinished || uiState.callStatus == CallStatus.DISCONNECTED
+    LaunchedEffect(isEnded) {
+        if (isEnded) {
             moveBack()
         }
     }
-    LaunchedEffect(uiState.callStatus) {
-        if (uiState.callStatus == CallStatus.DISCONNECTED) {
-            moveBack()
-        }
-    }
-    CallScreenContent(roomCode, uiState)
+    CallScreenContent(roomCode, uiState, onEndCall = { viewModel.close() })
 }
 
 @Composable
-fun CallScreenContent(roomCode: String, uiState: CallUiState) {
+fun CallScreenContent(roomCode: String, uiState: CallUiState, onEndCall: () -> Unit = {}) {
     when (uiState.callStatus) {
-        CallStatus.CONNECTED -> ConnectedScreen(roomCode)
-        else -> ConnectingScreen(roomCode, uiState)
+        CallStatus.CONNECTED -> ConnectedScreen(roomCode, onEndCall)
+        else -> ConnectingScreen(roomCode, uiState, onEndCall)
     }
 }
 
 @Composable
-fun ConnectingScreen(roomCode: String, uiState: CallUiState) {
+fun ConnectingScreen(roomCode: String, uiState: CallUiState, onEndCall: () -> Unit = {}) {
     val isServerConnected = {
         uiState.callStatus == CallStatus.JOINED || uiState.callStatus == CallStatus.NEGOTIATING
     }
@@ -95,12 +91,12 @@ fun ConnectingScreen(roomCode: String, uiState: CallUiState) {
             Text("상대방 입장")
         }
         Text("${uiState.remainSeconds}초 후 자동 종료")
-        Button({}) { Text("취소") }
+        Button(onEndCall) { Text("취소") }
     }
 }
 
 @Composable
-fun ConnectedScreen(roomCode: String) {
+fun ConnectedScreen(roomCode: String, onEndCall: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,6 +107,6 @@ fun ConnectedScreen(roomCode: String) {
         Text("방 코드 $roomCode 로 통화 중")
         Text("AI가 통화를 듣고 있어요")
         Text("자막은 표시하지 않습니다. 통화가 끝나면 요약이 만들어집니다.")
-        Button({}) { Text("통화 종료") }
+        Button(onEndCall) { Text("통화 종료") }
     }
 }

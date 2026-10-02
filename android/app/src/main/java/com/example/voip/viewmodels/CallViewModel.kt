@@ -93,4 +93,13 @@ class CallViewModel(
             else -> print("TODO it will be deleted when all status handling is implemented")
         }
     }
+
+    fun close() {
+        signalClient.close()
+        _uiState.update { current -> current.copy(callStatus = CallStatus.DISCONNECTED) }
+//        timerJob?.cancel()
+//        timerJob = null
+//        callJob?.cancel()
+//        callJob = null
+    }
 }
