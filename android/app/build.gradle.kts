@@ -1,7 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
 }
 
 android {
@@ -20,9 +27,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            isDebuggable = true
-        }
         release {
             optimization {
                 enable = false
@@ -48,17 +52,14 @@ android {
             buildConfigField(
                 "String",
                 "WEB_SOCKET_BASE_URL",
-                "\"ws://10.0.2.2:8080/\""
+                "\"ws://10.0.2.2:8080\""
             )
         }
         create("dev") {
             dimension = "environment"
             applicationIdSuffix = ".dev"
-            buildConfigField(
-                "String",
-                "WEB_SOCKET_BASE_URL",
-                "\"ws://192.168.0.4:8080/\""
-            )
+            val url = localProperties.getProperty("dev.websocket.url") ?: "ws://10.0.2.2:8080"
+            buildConfigField("String", "WEB_SOCKET_BASE_URL", "\"$url\"")
         }
     }
 }

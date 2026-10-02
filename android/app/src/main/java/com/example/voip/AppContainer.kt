@@ -24,7 +24,7 @@ class DefaultAppContainer : AppContainer {
 
     private fun createSignalClient(): SignalClient =
         SignalClientImpl(
-            BuildConfig.WEB_SOCKET_BASE_URL,
+            "${BuildConfig.WEB_SOCKET_BASE_URL}/signaling",
             okHttpClient
         )
 
