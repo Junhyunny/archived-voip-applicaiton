@@ -2,6 +2,7 @@ package voip.signaling.app.component
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator
@@ -50,6 +51,19 @@ class SignalWebSocketHandler(
         return Pair(signalResponseType, TextMessage(response))
     }
 
+    /**
+     * 한 피어가 끊겨 있어도 나머지 피어에게는 전달되도록 개별적으로 예외를 삼킨다.
+     */
+    private fun sendToPeers(peers: List<WebSocketSession>, message: TextMessage) {
+        peers.forEach { peer ->
+            try {
+                peer.sendMessage(message)
+            } catch (e: Exception) {
+                logger.warn("failed to send message to ${peer.id}: ${e.message}", e)
+            }
+        }
+    }
+
     private fun handleJoinMessage(session: WebSocketSession, request: SignalRequest) {
         val concurrentSession = ConcurrentWebSocketSessionDecorator(session, 5000, 1024 * 512)
         val roomCode = request.payload["roomCode"] as? String
@@ -63,16 +77,36 @@ class SignalWebSocketHandler(
             val peerJoinedResponse = toJsonString(
                 SignalResponse(type = SignalResponseType.PEER_JOINED)
             )
-            peers.forEach { peer ->
-                try {
-                    peer.sendMessage(
-                        TextMessage(peerJoinedResponse)
-                    )
-                } catch (e: Exception) {
-                    logger.warn("failed to send peer_joined message ${peer.id}: ${e.message}", e)
-                }
-            }
+            sendToPeers(peers, TextMessage(peerJoinedResponse))
         }
+    }
+
+    /**
+     * offer/answer/ice_candidate 는 서버가 내용을 해석하지 않고 payload 를 그대로 상대에게 넘긴다.
+     * SDP 와 ICE 후보는 두 단말끼리 이해하면 되는 값이라 서버가 알아야 할 이유가 없다.
+     */
+    private fun handleRelayMessage(
+        session: WebSocketSession,
+        request: SignalRequest,
+        responseType: SignalResponseType
+    ) {
+        val peers = roomManager.getPeers(session)
+        if (peers.isEmpty()) {
+            logger.warn("no peer to relay ${responseType.toJson()} from ${session.id}")
+            return
+        }
+        val response = toJsonString(
+            SignalResponse(type = responseType, payload = request.payload)
+        )
+        sendToPeers(peers, TextMessage(response))
+    }
+
+    private fun handleLeaveMessage(session: WebSocketSession) {
+        val peers = roomManager.leaveRoom(session)
+        val peerLeftResponse = toJsonString(
+            SignalResponse(type = SignalResponseType.PEER_LEFT)
+        )
+        sendToPeers(peers, TextMessage(peerLeftResponse))
     }
 
     override fun handleTextMessage(
@@ -87,7 +121,20 @@ class SignalWebSocketHandler(
         }
         when (request?.type) {
             SignalRequestType.JOIN -> handleJoinMessage(session, request)
+            SignalRequestType.OFFER -> handleRelayMessage(session, request, SignalResponseType.OFFER)
+            SignalRequestType.ANSWER -> handleRelayMessage(session, request, SignalResponseType.ANSWER)
+            SignalRequestType.ICE_CANDIDATE -> handleRelayMessage(session, request, SignalResponseType.ICE_CANDIDATE)
+            SignalRequestType.LEAVE -> handleLeaveMessage(session)
             null -> handleNotSupportType(session)
         }
+    }
+
+    /**
+     * 앱 강제 종료나 네트워크 단절처럼 leave 메시지를 못 보내고 끊기는 경우가 더 흔하다.
+     * 방 정리는 leave 메시지가 아니라 연결 종료 시점을 기준으로 삼는다.
+     */
+    override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
+        logger.info("session {} is closed, status code {}", session.id, status.code)
+        handleLeaveMessage(session)
     }
 }

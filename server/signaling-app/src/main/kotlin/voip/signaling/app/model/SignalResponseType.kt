@@ -6,7 +6,11 @@ enum class SignalResponseType {
     ERROR,
     JOINED,
     JOIN_FAILED,
-    PEER_JOINED;
+    PEER_JOINED,
+    OFFER,
+    ANSWER,
+    ICE_CANDIDATE,
+    PEER_LEFT;
 
     @JsonValue
     fun toJson(): String = name.lowercase()
