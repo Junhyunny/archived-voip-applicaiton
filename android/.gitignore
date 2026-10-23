@@ -1,0 +1,27 @@
+# Android Studio and IntelliJ IDEA
+.idea/
+*.iml
+
+# Gradle and Kotlin
+.gradle/
+.kotlin/
+**/build/
+out/
+
+# Local Android SDK configuration
+local.properties
+
+# Native build output
+.cxx/
+.externalNativeBuild/
+
+# Device and test artifacts
+captures/
+*.hprof
+
+# Signing credentials
+*.jks
+*.keystore
+
+# macOS
+.DS_Store
