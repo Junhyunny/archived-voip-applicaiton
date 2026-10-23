@@ -1,0 +1,132 @@
+//
+//  MockWSMessageHandler.swift
+//  voip-ios
+//
+//  Created by 강준현 on 9/21/26.
+//
+
+import FlyingFox
+import FlyingSocks
+import Foundation
+
+actor MockMessageStore {
+    private(set) var messages: [String] = []
+    private(set) var response: WSMessage = WSMessage.text("{}")
+
+    func clearMessages() {
+        messages.removeAll()
+    }
+    
+    func append(_ message: String) {
+        messages.append(message)
+    }
+
+    func setResponse(_ response: WSMessage) {
+        self.response = response
+    }
+
+}
+
+final class MockWSMessageHandler: WSMessageHandler {
+
+    let store: MockMessageStore
+    let outboundStream: AsyncStream<WSMessage>
+    let continuation: AsyncStream<WSMessage>.Continuation
+    let onClientMessage: (@Sendable (String) async -> Void)?
+
+    init(
+        store: MockMessageStore,
+        outboundStream: AsyncStream<WSMessage>,
+        continuation: AsyncStream<WSMessage>.Continuation,
+        onClientMessage: (@Sendable (String) async -> Void)? = nil
+    ) {
+        self.store = store
+        self.outboundStream = outboundStream
+        self.continuation = continuation
+        self.onClientMessage = onClientMessage
+    }
+
+    convenience init(
+        store: MockMessageStore
+    ) {
+        var c: AsyncStream<WSMessage>.Continuation!
+        let stream = AsyncStream<WSMessage> { c = $0 }
+        self.init(
+            store: store,
+            outboundStream: stream,
+            continuation: c!,
+            onClientMessage: nil
+        )
+    }
+
+    func push(_ message: WSMessage) {
+        self.continuation.yield(message)
+    }
+
+    func makeMessages(
+        for client: AsyncStream<WSMessage>
+    ) async throws -> AsyncStream<WSMessage> {
+        Task { [store, continuation] in
+            for await message in client {
+                if case .text(let text) = message {
+                    await store.append(text)
+                    await onClientMessage?(text)
+                }
+                let stub = await store.response
+                continuation.yield(stub)
+            }
+            continuation.finish()
+        }
+        return outboundStream
+    }
+}
+
+func withMockServer(
+    store: MockMessageStore,
+    route: (HTTPRoute, WSMessageHandler),
+    _ body: (_ port: UInt16) async throws -> Void
+) async throws {
+    let server = HTTPServer(port: 0)
+    await server.appendRoute(
+        route.0,
+        to: .webSocket(route.1)
+    )
+    defer {
+        await server.stop()
+    }
+    Task {
+        do {
+            try await server.run()
+        } catch {
+            print("server error:", error)
+        }
+    }
+    try await server.waitUntilListening()
+    guard let address = await server.listeningAddress else {
+        throw MockServerError.notFoundAddress
+    }
+    let port: UInt16 =
+        switch address {
+        case .ip4(_, let portNumber), .ip6(_, let portNumber): portNumber
+        case .unix: throw MockServerError.notFoundPort
+        }
+    try await body(port)
+}
+
+func parseMessage(messages: [String]) throws -> [[String: Any?]] {
+    var result = [[String: Any?]]()
+    for message in messages {
+        let data = Data(message.utf8)
+        let json = try JSONSerialization.jsonObject(with: data)
+        guard let map = json as? [String: Any] else {
+            continue
+        }
+        result.append(map)
+    }
+    return result
+}
+
+enum MockServerError: Error {
+    case notFoundAddress
+    case notFoundPort
+}
